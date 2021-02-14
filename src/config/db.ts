@@ -2,7 +2,7 @@ import mongoose = require('mongoose')
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.TEST_MONGO_URI ?? 'mongodb://localhost:27017', {
+    const conn = await mongoose.connect(process.env.MONGO_URI ?? 'mongodb://localhost:27017', {
       useNewUrlParser: true,
       useCreateIndex: true,
       useFindAndModify: false,
