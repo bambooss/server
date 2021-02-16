@@ -1,7 +1,8 @@
 require('dotenv').config()
 
-import express = require('express')
+import express from 'express'
 const connectDB = require('./config/db')
+const cors = require('cors')
 
 const indexRoute = require('./routes/router-index')
 
@@ -14,6 +15,7 @@ const app = express()
 
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
+app.use(cors())
 app.use('/', indexRoute)
 
 app.listen(httpPort, () => {
