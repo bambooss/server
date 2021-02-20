@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
+    default: '',
   },
   username: {
     type: String,
@@ -18,8 +19,46 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     trim: true,
   },
+  password: {
+    type: String,
+    required: [true, 'Please provide your password'],
+    minlength: [8, 'The password must be at least 3 characters long'],
+    maxlength: [128, 'The username must be at most 20 characters long'],
+    trim: true,
+  },
+  profiles: {
+    githubURL: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    gitlabURL: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    bitbucketURL: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    linkedinURL: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+  },
+  pLanguages: {
+    type: Array,
+    default: [],
+  },
+  sLanguages: {
+    type: Array,
+    default: [],
+  },
   bio: {
     type: String,
+    default: '',
   },
   tokens: [
     {
