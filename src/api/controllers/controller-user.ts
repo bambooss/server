@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
+import gravatar from 'gravatar'
 const model_users = require('../models/model-user')
 
 exports.createUser = async (req: express.Request, res: express.Response) => {
@@ -25,6 +26,14 @@ exports.createUser = async (req: express.Request, res: express.Response) => {
     // Hash password
     user.password = await bcrypt.hash(user.password, 11)
 
+    const avatar = await gravatar.url(user.email, {
+      s: '200',
+      r: 'pg',
+      d: 'mm',
+    })
+
+    user.avatar = `https:${avatar}`
+
     // Verify and create social profiles
     user = verifyAndCreateSocial(user)
 
@@ -33,10 +42,13 @@ exports.createUser = async (req: express.Request, res: express.Response) => {
     // Generate auth token
     const token = await user.generateAuthToken()
 
+    user.password = '***********'
+
     return res.status(200).json({
       status: 200,
       message: 'User was created successfully',
-      token: token
+      token,
+      user
     })
 
   } catch (error) {
