@@ -43,7 +43,7 @@ exports.createUser = async (req: express.Request, res: express.Response) => {
     console.log(error)
     res.status(500).json({
       status: 500,
-      message: 'Server error 500'
+      message: error.message
     })
   }
 }

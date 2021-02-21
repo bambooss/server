@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     trim: true,
+    match: [/^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
   },
   password: {
     type: String,
@@ -89,7 +90,6 @@ userSchema.methods.generateAuthToken = async function () {
   const user = this
   const token = jwt.sign(
     { _id: user._id, name: user.username, email: user.email },
-    // eslint-disable-next-line no-undef
     process.env.BEARER_TOKEN_SECRET
   )
   user.tokens = user.tokens.concat({
