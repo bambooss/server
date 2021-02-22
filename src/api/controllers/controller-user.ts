@@ -12,7 +12,7 @@ const model_users = require('../models/model-user')
  * @param {object} req.body.user - user's data object
  * @param {object} res - Response object from express router
  * @method POST
- * @route /auth/user
+ * @route /auth/user/register
  * @access Public
  * @author Gabor
  */
@@ -63,8 +63,8 @@ exports.createUser = async (req: Request<registerUserRequest>,
     // DB not affected
     user.password = '***********'
 
-    return res.status(200).json({
-      status: 200,
+    return res.status(201).json({
+      status: 201,
       message: 'User was created successfully',
       token,
       user
@@ -79,7 +79,47 @@ exports.createUser = async (req: Request<registerUserRequest>,
   }
 }
 
+exports.loginUser = async (req: Request, res: Response) => {
+  try {
+    const { user } = req.body
 
+    const foundUser = await model_users.findOne({email: user.email})
+
+    if(!foundUser) {
+      return res.status(401).json({
+        status: 401,
+        message: 'Invalid credentials'
+      })
+    }
+
+    const isCorrectPassword = await bcrypt.compare(user.password, foundUser.password)
+
+    if(!isCorrectPassword) {
+      return res.status(401).json({
+        status: 401,
+        message: 'Invalid credentials'
+      })
+    }
+
+    const token = await foundUser.generateAuthToken()
+
+    foundUser.password = '***********'
+
+    return res.status(200).json({
+      status: 200,
+      message: 'Login successful',
+      token,
+      user: foundUser
+    })
+
+  } catch (error) {
+      console.log(error)
+      res.status(500).json({
+        status: 500,
+        message: error.message
+      })
+  }
+}
 
 // Creates social profiles URLs based on usernames
 const verifyAndCreateSocial = (user: { profiles: { githubURL: string; gitlabURL: string; bitbucketURL: string; linkedinURL: string } }) => {
