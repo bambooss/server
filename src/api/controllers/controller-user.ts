@@ -16,34 +16,8 @@ const model_users = require('../models/model-user')
  * @access Public
  * @author Gabor
  */
-exports.createUser = async (req: Request<
-                              {
-                                body: {
-                                  user: {
-                                    username: string,
-                                    email: string,
-                                    password: string,
-                                    password2: string,
-                                    profiles: {
-                                      githubURL: string,
-                                      gitlabURL: string,
-                                      bitbucketURL: string,
-                                      linkedinURL: string
-                                    },
-                                    pLanguages: string[],
-                                    sLanguages: string[],
-                                    bio: string
-                                  }
-                                }
-                            }>,
-                            res: Response<
-                              {
-                                status: number,
-                                message?: string,
-                                token?: string,
-                                user?: Record<string, unknown>
-                              }
-                              >) => {
+exports.createUser = async (req: Request<registerUserRequest>,
+                            res: Response<registerUserResponse>) => {
   try {
     let { user } = req.body
 
@@ -105,6 +79,8 @@ exports.createUser = async (req: Request<
   }
 }
 
+
+
 // Creates social profiles URLs based on usernames
 const verifyAndCreateSocial = (user: { profiles: { githubURL: string; gitlabURL: string; bitbucketURL: string; linkedinURL: string } }) => {
   if(user.profiles.githubURL !== '') {
@@ -120,4 +96,31 @@ const verifyAndCreateSocial = (user: { profiles: { githubURL: string; gitlabURL:
     user.profiles.linkedinURL = `https://www.linkedin.com/in/${user.profiles.linkedinURL}/`
   }
   return user
+}
+
+interface registerUserRequest {
+  body: {
+    user: {
+      username: string,
+      email: string,
+      password: string,
+      password2: string,
+      profiles: {
+        githubURL: string,
+        gitlabURL: string,
+        bitbucketURL: string,
+        linkedinURL: string
+      },
+      pLanguages: string[],
+      sLanguages: string[],
+      bio: string
+    }
+  }
+}
+
+interface registerUserResponse {
+  status: number,
+  message?: string,
+  token?: string,
+  user?: Record<string, unknown>
 }
