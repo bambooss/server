@@ -3,7 +3,47 @@ import bcrypt from 'bcryptjs'
 import gravatar from 'gravatar'
 const model_users = require('../models/model-user')
 
-exports.createUser = async (req: express.Request, res: express.Response) => {
+/**
+ * Controller to create new users,
+ * It takes in the new user details, does a few checks
+ * and modifications and saves it to the DB
+ * and will return the user and a 200 success message.
+ * @param {Request} req - Request object from express router
+ * @param {object} req.body.user - user's data object
+ * @param {object} res - Response object from express router
+ * @method POST
+ * @route /auth/user
+ * @access Public
+ * @author Gabor
+ */
+exports.createUser = async (req: Request<
+                              {
+                                body: {
+                                  user: {
+                                    username: string,
+                                    email: string,
+                                    password: string,
+                                    password2: string,
+                                    profiles: {
+                                      githubURL: string,
+                                      gitlabURL: string,
+                                      bitbucketURL: string,
+                                      linkedinURL: string
+                                    },
+                                    pLanguages: string[],
+                                    sLanguages: string[],
+                                    bio: string
+                                  }
+                                }
+                            }>,
+                            res: Response<
+                              {
+                                status: number,
+                                message?: string,
+                                token?: string,
+                                user?: Record<string, unknown>
+                              }
+                              >) => {
   try {
     let { user } = req.body
 
@@ -16,7 +56,7 @@ exports.createUser = async (req: express.Request, res: express.Response) => {
     }
 
     // Compare passwords
-    if(user.password !== user.password_confirmation) {
+    if(user.password !== user.password2) {
       return res.status(400).json({
         status: 400,
         message: 'Passwords do not match'
@@ -26,12 +66,14 @@ exports.createUser = async (req: express.Request, res: express.Response) => {
     // Hash password
     user.password = await bcrypt.hash(user.password, 11)
 
+    // Get avatar from Gravatar
     const avatar = await gravatar.url(user.email, {
       s: '200',
       r: 'pg',
       d: 'mm',
     })
 
+    // Construct Gravatar URL
     user.avatar = `https:${avatar}`
 
     // Verify and create social profiles
@@ -39,9 +81,12 @@ exports.createUser = async (req: express.Request, res: express.Response) => {
 
     // Create user model
     user = await model_users.create(user)
+
     // Generate auth token
     const token = await user.generateAuthToken()
 
+    // Hide password before sending it in the response
+    // DB not affected
     user.password = '***********'
 
     return res.status(200).json({
@@ -60,6 +105,7 @@ exports.createUser = async (req: express.Request, res: express.Response) => {
   }
 }
 
+// Creates social profiles URLs based on usernames
 const verifyAndCreateSocial = (user: { profiles: { githubURL: string; gitlabURL: string; bitbucketURL: string; linkedinURL: string } }) => {
   if(user.profiles.githubURL !== '') {
     user.profiles.githubURL = `https://github.com/${user.profiles.githubURL}`
