@@ -19,6 +19,5 @@ app.use(cors())
 app.use('/', indexRoute)
 
 app.listen(httpPort, () => {
-  // eslint-disable-next-line no-console
   console.log(`Server is alive on port: ${httpPort} running as: ${process.env.NODE_ENVIROMENT}`)
 })

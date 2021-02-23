@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express'
+import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import gravatar from 'gravatar'
 const model_users = require('../models/model-user')
@@ -7,7 +7,7 @@ const model_users = require('../models/model-user')
  * Controller to create new users,
  * It takes in the new user details, does a few checks
  * and modifications and saves it to the DB
- * and will return the user and a 200 success message.
+ * and will return the user and a 201 created message.
  * @param {Request} req - Request object from express router
  * @param {object} req.body.user - user's data object
  * @param {object} res - Response object from express router
@@ -16,8 +16,8 @@ const model_users = require('../models/model-user')
  * @access Public
  * @author Gabor
  */
-exports.createUser = async (req: Request<registerUserRequest>,
-                            res: Response<registerUserResponse>) => {
+exports.createUser = async (req: Request<RegisterUserRequest>,
+                            res: Response<UserResponse>) => {
   try {
     let { user } = req.body
 
@@ -79,12 +79,28 @@ exports.createUser = async (req: Request<registerUserRequest>,
   }
 }
 
-exports.loginUser = async (req: Request, res: Response) => {
+/**
+ * Controller to log in existing users,
+ * It takes in the email and password,
+ * checks for existing users, compares passwords
+ * and will return the user and a 200 success message.
+ * @param {Request} req - Request object from express router
+ * @param {object} req.body.user - user's data object
+ * @param {object} res - Response object from express router
+ * @method POST
+ * @route /auth/user/login
+ * @access Public
+ * @author Gabor
+ */
+exports.loginUser = async (req: Request<LoginUserRequest>,
+                           res: Response<UserResponse>) => {
   try {
     const { user } = req.body
 
+    // Checks for existing user in DB
     const foundUser = await model_users.findOne({email: user.email})
 
+    // If there is no user responds with invalid credentials
     if(!foundUser) {
       return res.status(401).json({
         status: 401,
@@ -92,8 +108,10 @@ exports.loginUser = async (req: Request, res: Response) => {
       })
     }
 
+    // Compares passwords
     const isCorrectPassword = await bcrypt.compare(user.password, foundUser.password)
 
+    // If passwords don't match with the one in the DB responds with invalid credentials
     if(!isCorrectPassword) {
       return res.status(401).json({
         status: 401,
@@ -101,8 +119,11 @@ exports.loginUser = async (req: Request, res: Response) => {
       })
     }
 
+    // Generates new auth token
     const token = await foundUser.generateAuthToken()
 
+    // Hide password before sending it in the response
+    // DB not affected
     foundUser.password = '***********'
 
     return res.status(200).json({
@@ -138,7 +159,11 @@ const verifyAndCreateSocial = (user: { profiles: { githubURL: string; gitlabURL:
   return user
 }
 
-interface registerUserRequest {
+////////////////
+// INTERFACES //
+////////////////
+
+interface RegisterUserRequest {
   body: {
     user: {
       username: string,
@@ -158,9 +183,18 @@ interface registerUserRequest {
   }
 }
 
-interface registerUserResponse {
+interface UserResponse {
   status: number,
   message?: string,
   token?: string,
   user?: Record<string, unknown>
+}
+
+interface LoginUserRequest {
+  body: {
+    user: {
+      email: string,
+      password: string,
+    }
+  }
 }
