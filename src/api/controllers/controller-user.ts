@@ -96,6 +96,7 @@ exports.loginUser = async (req: Request<LoginUserRequest>,
                            res: Response<UserResponse>) => {
   try {
     const { user } = req.body
+    user.email = user.email.toLowerCase().trim()
 
     // Checks for existing user in DB
     const foundUser = await model_users.findOne({email: user.email})
