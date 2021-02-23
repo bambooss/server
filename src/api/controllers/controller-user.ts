@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 import gravatar from 'gravatar'
 const model_users = require('../models/model-user')
 
@@ -142,6 +143,45 @@ exports.loginUser = async (req: Request<LoginUserRequest>,
       })
   }
 }
+
+exports.forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { user } = req.body
+    user.email = user.email.toLowerCase().trim()
+
+    // Checks for existing user in DB
+    const foundUser = await model_users.findOne({email: user.email})
+
+    console.log(foundUser)
+    if(!foundUser) {
+      return res.status(200).json({
+        status: 200,
+        message: 'If the email is registered you will receive a password reset email shortly'
+      })
+    }
+
+    foundUser.resetPasswordToken.token = crypto.randomBytes(16).toString('hex')
+    foundUser.resetPasswordToken.createdAt = Date.now()
+
+    await model_users.create(foundUser).then()
+
+    return res.status(200).json({
+      status: 200,
+      message: 'If the email is registered you will receive a password reset email shortly'
+    })
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
+
+/////////////
+// HELPERS //
+/////////////
 
 // Creates social profiles URLs based on usernames
 const verifyAndCreateSocial = (user: { profiles: { githubURL: string; gitlabURL: string; bitbucketURL: string; linkedinURL: string } }) => {

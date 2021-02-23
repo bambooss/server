@@ -62,6 +62,16 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  resetPasswordToken: {
+    token: {
+      type: String,
+      default: '',
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+    }
+  },
   tokens: [
     {
       token: {
