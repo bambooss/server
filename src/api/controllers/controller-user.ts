@@ -64,6 +64,8 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
     // DB not affected
     user.password = '***********'
 
+    res.setHeader('Set-Cookie', `authorization=${token}; HttpOnly`)
+
     return res.status(201).json({
       status: 201,
       message: 'User was created successfully',
@@ -183,7 +185,7 @@ exports.loginUser = async (req: Request<LoginUserRequest>,
 // }
 
 exports.testController = async (req: Request, res: Response) => {
-  let cookies = req.headers.cookie
+  const cookies = req.headers.cookie
 
   if (!cookies) {
 
@@ -192,6 +194,8 @@ exports.testController = async (req: Request, res: Response) => {
       message: 'Missing authentication'
     })
   }
+
+  console.log(cookies)
 
   res.send('happy days')
 
