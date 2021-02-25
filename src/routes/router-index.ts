@@ -3,7 +3,7 @@ const user = require('./router-user')
 const router = express.Router()
 
 router
-  .use('/auth', user)
+  .use('/user', user)
 
 router
   .all('*', (req: Request, res: Response) => {

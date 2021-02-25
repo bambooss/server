@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
-import crypto from 'crypto'
+// import crypto from 'crypto'
 import gravatar from 'gravatar'
 const model_users = require('../models/model-user')
 
@@ -144,58 +144,94 @@ exports.loginUser = async (req: Request<LoginUserRequest>,
   }
 }
 
-exports.forgotPassword = async (req: Request, res: Response) => {
-  try {
-    const { user } = req.body
-    user.email = user.email.toLowerCase().trim()
+// exports.forgotPassword = async (req: Request, res: Response) => {
+//   try {
+//     const { user } = req.body
+//     user.email = user.email.toLowerCase().trim()
+//
+//     // Checks for existing user in DB
+//     const foundUser = await model_users.findOne({email: user.email})
+//
+//     console.log(foundUser)
+//     if(!foundUser) {
+//       return res.status(200).json({
+//         status: 200,
+//         message: 'If the email is registered you will receive a password reset email shortly'
+//       })
+//     }
+//
+//     foundUser.resetPasswordToken.token = crypto.randomBytes(16).toString('hex')
+//     foundUser.resetPasswordToken.createdAt = Date.now()
+//
+//     await model_users.create(foundUser).then()
+//
+//     // Creating a reset link to send in the email
+//     const resetLink = `http://localhost:3000/reset/${foundUser.resetPasswordToken}`
+//
+//     return res.status(200).json({
+//       status: 200,
+//       message: 'If the email is registered you will receive a password reset email shortly'
+//     })
+//
+//   } catch (error) {
+//     console.log(error)
+//     res.status(500).json({
+//       status: 500,
+//       message: error.message
+//     })
+//   }
+// }
 
-    // Checks for existing user in DB
-    const foundUser = await model_users.findOne({email: user.email})
+exports.testController = async (req: Request, res: Response) => {
+  let cookies = req.headers.cookie
 
-    console.log(foundUser)
-    if(!foundUser) {
-      return res.status(200).json({
-        status: 200,
-        message: 'If the email is registered you will receive a password reset email shortly'
-      })
-    }
+  if (!cookies) {
 
-    foundUser.resetPasswordToken.token = crypto.randomBytes(16).toString('hex')
-    foundUser.resetPasswordToken.createdAt = Date.now()
-
-    await model_users.create(foundUser).then()
-
-    return res.status(200).json({
-      status: 200,
-      message: 'If the email is registered you will receive a password reset email shortly'
-    })
-
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      status: 500,
-      message: error.message
+    return res.status(401).json({
+      status: 401,
+      message: 'Missing authentication'
     })
   }
+
+  res.send('happy days')
+
 }
+
+// exports.getUserProfile = async (req: Request, res: Response) => {
+//   try {
+//
+//   } catch (error) {
+//     console.log(error)
+//     res.status(500).json({
+//       status: 500,
+//       message: error.message
+//     })
+//   }
+// }
 
 /////////////
 // HELPERS //
 /////////////
 
 // Creates social profiles URLs based on usernames
-const verifyAndCreateSocial = (user: { profiles: { githubURL: string; gitlabURL: string; bitbucketURL: string; linkedinURL: string } }) => {
-  if(user.profiles.githubURL !== '') {
-    user.profiles.githubURL = `https://github.com/${user.profiles.githubURL}`
+const verifyAndCreateSocial = (user:
+                                 {
+                                   githubURL: string;
+                                   gitlabURL: string;
+                                   bitbucketURL: string;
+                                   linkedinURL: string
+                                 }) => {
+  if(user.githubURL !== '') {
+    user.githubURL = `https://github.com/${user.githubURL}`
   }
-  if(user.profiles.gitlabURL !== '') {
-    user.profiles.gitlabURL = `https://gitlab.com/${user.profiles.gitlabURL}`
+  if(user.gitlabURL !== '') {
+    user.gitlabURL = `https://gitlab.com/${user.gitlabURL}`
   }
-  if(user.profiles.bitbucketURL !== '') {
-    user.profiles.bitbucketURL = `https://bitbucket.org/${user.profiles.bitbucketURL}/`
+  if(user.bitbucketURL !== '') {
+    user.bitbucketURL = `https://bitbucket.org/${user.bitbucketURL}/`
   }
-  if(user.profiles.linkedinURL !== '') {
-    user.profiles.linkedinURL = `https://www.linkedin.com/in/${user.profiles.linkedinURL}/`
+  if(user.linkedinURL !== '') {
+    user.linkedinURL = `https://www.linkedin.com/in/${user.linkedinURL}/`
   }
   return user
 }
@@ -211,12 +247,10 @@ interface RegisterUserRequest {
       email: string,
       password: string,
       password2: string,
-      profiles: {
-        githubURL: string,
-        gitlabURL: string,
-        bitbucketURL: string,
-        linkedinURL: string
-      },
+      githubURL: string,
+      gitlabURL: string,
+      bitbucketURL: string,
+      linkedinURL: string,
       pLanguages: string[],
       sLanguages: string[],
       bio: string

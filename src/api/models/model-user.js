@@ -28,33 +28,31 @@ const userSchema = new mongoose.Schema({
     maxlength: [128, 'The username must be at most 128 characters long'],
     trim: true,
   },
-  profiles: {
-    githubURL: {
-      type: String,
-      trim: true,
-      default: '',
-    },
-    gitlabURL: {
-      type: String,
-      trim: true,
-      default: '',
-    },
-    bitbucketURL: {
-      type: String,
-      trim: true,
-      default: '',
-    },
-    linkedinURL: {
-      type: String,
-      trim: true,
-      default: '',
-    },
+  githubURL: {
+    type: String,
+    trim: true,
+    default: '',
   },
-  pLanguages: {
+  gitlabURL: {
+    type: String,
+    trim: true,
+    default: '',
+  },
+  bitbucketURL: {
+    type: String,
+    trim: true,
+    default: '',
+  },
+  linkedinURL: {
+    type: String,
+    trim: true,
+    default: '',
+  },
+  technologies: {
     type: Array,
     default: [],
   },
-  sLanguages: {
+  languages: {
     type: Array,
     default: [],
   },

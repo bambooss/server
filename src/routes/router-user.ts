@@ -1,10 +1,12 @@
 import express from 'express'
 
-const { createUser, loginUser, forgotPassword } = require('../api/controllers/controller-user')
+const { createUser, loginUser, testController } = require('../api/controllers/controller-user')
+// const { auth } = require('../middlewares/middleware-auth')
 const router = express.Router()
 
-router.post('/user/register', createUser)
-router.post('/user/login', loginUser)
-router.post('/user/forgot', forgotPassword)
+router.post('/register', createUser)
+router.post('/login', loginUser)
+// router.post('/forgot', forgotPassword)
+router.get('/cookie', testController)
 
 module.exports = router
