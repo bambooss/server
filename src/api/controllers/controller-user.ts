@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
-// import crypto from 'crypto'
 import gravatar from 'gravatar'
+import mongoose from 'mongoose'
 const model_users = require('../models/model-user')
 
 /**
@@ -64,8 +64,6 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
     // DB not affected
     user.password = '***********'
 
-    res.setHeader('Set-Cookie', `authorization=${token}; HttpOnly`)
-
     return res.status(201).json({
       status: 201,
       message: 'User was created successfully',
@@ -99,6 +97,7 @@ exports.loginUser = async (req: Request<LoginUserRequest>,
                            res: Response<UserResponse>) => {
   try {
     const { user } = req.body
+
     user.email = user.email.toLowerCase().trim()
 
     // Checks for existing user in DB
@@ -184,34 +183,47 @@ exports.loginUser = async (req: Request<LoginUserRequest>,
 //   }
 // }
 
-exports.testController = async (req: Request, res: Response) => {
-  const cookies = req.headers.cookie
+exports.getUserProfile = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.query
+    if(typeof id === 'string' && id !== '') {
+      if(mongoose.Types.ObjectId.isValid(id)) {
+        const user = await model_users
+          .findById(id)
+          .select(
+            [
+              '-tokens',
+              '-password',
+              '-resetPasswordToken',
+              '-__v',
+              '-createdAt',
+              '-updatedAt',
+              '-_id'
+            ]
+          )
+        if(user) {
+          return res.status(200).json({
+            status: 200,
+            message: `Profile of ${user.username}`,
+            user
+          })
+        }
+      }
+    }
+      return res.status(403).json({
+        status: 403,
+        message: 'Not authorized'
+      })
 
-  if (!cookies) {
-
-    return res.status(401).json({
-      status: 401,
-      message: 'Missing authentication'
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      status: 500,
+      message: error.message
     })
+
   }
-
-  console.log(cookies)
-
-  res.send('happy days')
-
 }
-
-// exports.getUserProfile = async (req: Request, res: Response) => {
-//   try {
-//
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({
-//       status: 500,
-//       message: error.message
-//     })
-//   }
-// }
 
 /////////////
 // HELPERS //

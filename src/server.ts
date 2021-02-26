@@ -3,7 +3,6 @@ require('dotenv').config()
 import express from 'express'
 const connectDB = require('./config/db')
 const cors = require('cors')
-import cookieParser from 'cookie-parser'
 
 const indexRoute = require('./routes/router-index')
 
@@ -17,7 +16,6 @@ const app = express()
 app.use(cors())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
-app.use(cookieParser())
 app.use('/', indexRoute)
 
 app.listen(httpPort, () => {
