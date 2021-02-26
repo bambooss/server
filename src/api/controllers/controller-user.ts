@@ -13,7 +13,7 @@ const model_users = require('../models/model-user')
  * @param {object} req.body.user - user's data object
  * @param {object} res - Response object from express router
  * @method POST
- * @route /auth/user/register
+ * @route /user/register
  * @access Public
  * @author Gabor
  */
@@ -89,7 +89,7 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
  * @param {object} req.body.user - user's data object
  * @param {object} res - Response object from express router
  * @method POST
- * @route /auth/user/login
+ * @route /user/login
  * @access Public
  * @author Gabor
  */
@@ -183,11 +183,27 @@ exports.loginUser = async (req: Request<LoginUserRequest>,
 //   }
 // }
 
+/**
+ * Controller to get user profile,
+ * It accepts an user ID checks it against the database
+ * and will return the user and a 200 success message.
+ * @param {Request} req - Request object from express router
+ * @param {object} req.query.id - user id
+ * @param {object} res - Response object from express router
+ * @method GET
+ * @route /user
+ * @access Private
+ * @author Gabor
+ */
 exports.getUserProfile = async (req: Request, res: Response) => {
   try {
+    // Gets user ID
     const { id } = req.query
-    if(typeof id === 'string' && id !== '') {
+    // Checks if user ID is a string
+    if(typeof id === 'string') {
+      // Checks if user ID is a valid mongo ID
       if(mongoose.Types.ObjectId.isValid(id)) {
+        // Gets user data form DB and removes unnecessary fields
         const user = await model_users
           .findById(id)
           .select(
@@ -201,6 +217,7 @@ exports.getUserProfile = async (req: Request, res: Response) => {
               '-_id'
             ]
           )
+        // If user found returns the user
         if(user) {
           return res.status(200).json({
             status: 200,
@@ -210,6 +227,7 @@ exports.getUserProfile = async (req: Request, res: Response) => {
         }
       }
     }
+      // Returns auth error if any if checks fail
       return res.status(403).json({
         status: 403,
         message: 'Not authorized'
