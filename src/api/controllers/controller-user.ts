@@ -198,7 +198,9 @@ exports.loginUser = async (req: Request<LoginUserRequest>,
 exports.getUserProfile = async (req: Request, res: Response) => {
   try {
     // Gets user ID
-    const { id } = req.query
+    const id = req.body.decoded._id
+
+    console.log('UsedID: ', id)
     // Checks if user ID is a string
     if(typeof id === 'string') {
       // Checks if user ID is a valid mongo ID
@@ -219,6 +221,7 @@ exports.getUserProfile = async (req: Request, res: Response) => {
           )
         // If user found returns the user
         if(user) {
+          console.log('User: ', user)
           return res.status(200).json({
             status: 200,
             message: `Profile of ${user.username}`,
@@ -240,6 +243,61 @@ exports.getUserProfile = async (req: Request, res: Response) => {
       message: error.message
     })
 
+  }
+}
+
+exports.updateUser = async (req: Request, res: Response) => {
+  try {
+
+  } catch (error) {
+
+  }
+}
+
+/**
+ * Controller to mark user for deletion,
+ * It accepts an user ID checks it against the database
+ * and will return a 200 success message.
+ * @param {Request} req - Request object from express router
+ * @param {object} req.query.id - user id
+ * @param {object} res - Response object from express router
+ * @method Delete
+ * @route /user
+ * @access Private
+ * @author Gabor
+ */
+exports.deleteUser = async (req: Request, res: Response) => {
+  try {
+    // Gets user ID
+    const id = req.body.decoded._id
+
+    console.log('UsedID: ', id)
+
+    if(typeof id === 'string') {
+      // Checks if user ID is a valid mongo ID
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        // Gets user data form DB and removes unnecessary fields
+        const user = await model_users.findByIdAndUpdate(id, { isDeleted: true }, {new: true})
+        // Is isDeleted changed to true, success
+        if(user.isDeleted) {
+          return res.status(200).json({
+            status: 200,
+            message: 'User marked for deletion'
+          })
+        }
+      }
+    }
+    // If any if statements fails this code runs
+    return res.status(403).json({
+      status: 403,
+      message: 'Not authorized'
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
   }
 }
 

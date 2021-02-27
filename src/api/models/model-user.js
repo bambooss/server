@@ -2,6 +2,10 @@ import mongoose from 'mongoose'
 import jwt from 'jsonwebtoken'
 
 const userSchema = new mongoose.Schema({
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
   avatar: {
     type: String,
     default: '',
