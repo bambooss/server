@@ -1,11 +1,12 @@
-import express = require('express')
+import express, {Request, Response} from 'express'
+const user = require('./router-user')
 const router = express.Router()
 
-router.get('/test', (req, res) => {
-  res.send('test is working')
-})
+router
+  .use('/user', user)
 
-router.all('*', (req: express.Request, res: express.Response) => {
+router
+  .all('*', (req: Request, res: Response) => {
 
   res.status(404).json({
     status: 404,
