@@ -23,10 +23,6 @@ exports.auth = async (req: Request, res: Response, next: NextFunction) => {
         message: 'Server error'
       })
     } else {
-      // token = token.replace(
-      //   'Bearer ',
-      //   ''
-      // )
       const decoded = jwt.verify(token, bearerTokenSecret)
 
       console.log('Decoded: ', decoded)

@@ -242,15 +242,51 @@ exports.getUserProfile = async (req: Request, res: Response) => {
       status: 500,
       message: error.message
     })
-
   }
 }
 
 exports.updateUser = async (req: Request, res: Response) => {
   try {
+    // Gets user ID
+    const id = req.body.decoded._id
+    let {user} = req.body
 
+    user.email = user.email.toLowerCase().trim()
+
+    console.log('UsedID: ', id)
+
+    // Verify and create social profiles
+    user = verifyAndCreateSocial(user)
+
+    if(typeof id === 'string') {
+      // Checks if user ID is a valid mongo ID
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        // Update user and return new user details
+        const newUser = await model_users.findByIdAndUpdate(id, user, { new: true })
+
+        const token = await newUser.generateAuthToken()
+
+        // Hide password before sending it in the response
+        // DB not affected
+        newUser.password = '***********'
+
+        console.log('newUser: ', newUser)
+        console.log('token: ', token)
+
+        return res.status(200).json({
+          status: 200,
+          message: 'Login successful',
+          token,
+          user: newUser
+        })
+      }
+    }
   } catch (error) {
-
+    console.log(error)
+    res.status(500).json({
+      status: 500,
+      message: error.message
+    })
   }
 }
 
