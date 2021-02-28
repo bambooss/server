@@ -264,19 +264,25 @@ exports.updateUser = async (req: Request, res: Response) => {
         // Update user and return new user details
         const newUser = await model_users.findByIdAndUpdate(id, user, { new: true })
 
-        const token = await newUser.generateAuthToken()
-
         // Hide password before sending it in the response
         // DB not affected
         newUser.password = '***********'
+        
+        // Generates a new auth token if the username or email has changed
+        if(newUser.email !== req.body.decoded.email || newUser.username !== req.body.decoded.username) {
+          const token = await newUser.generateAuthToken()
 
-        console.log('newUser: ', newUser)
-        console.log('token: ', token)
+          return res.status(200).json({
+            status: 200,
+            message: 'Login successful',
+            user: newUser,
+            token
+          })
+        }
 
         return res.status(200).json({
           status: 200,
           message: 'Login successful',
-          token,
           user: newUser
         })
       }
