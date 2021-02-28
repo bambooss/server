@@ -188,19 +188,18 @@ exports.loginUser = async (req: Request<LoginUserRequest>,
  * It accepts an user ID checks it against the database
  * and will return the user and a 200 success message.
  * @param {Request} req - Request object from express router
- * @param {object} req.query.id - user id
+ * @param {object} req.body.decode._id - user id
  * @param {object} res - Response object from express router
  * @method GET
  * @route /user
  * @access Private
  * @author Gabor
  */
-exports.getUserProfile = async (req: Request, res: Response) => {
+exports.getUserProfile = async (req: Request, res: Response<UserResponse>) => {
   try {
     // Gets user ID
     const id = req.body.decoded._id
 
-    console.log('UsedID: ', id)
     // Checks if user ID is a string
     if(typeof id === 'string') {
       // Checks if user ID is a valid mongo ID
@@ -221,7 +220,6 @@ exports.getUserProfile = async (req: Request, res: Response) => {
           )
         // If user found returns the user
         if(user) {
-          console.log('User: ', user)
           return res.status(200).json({
             status: 200,
             message: `Profile of ${user.username}`,
@@ -245,15 +243,25 @@ exports.getUserProfile = async (req: Request, res: Response) => {
   }
 }
 
-exports.updateUser = async (req: Request, res: Response) => {
+/**
+ * Controller to update user profile,
+ * It gets the user ID from auth middleware checks it against the database
+ * and will return the user and a 200 success message.
+ * @param {Request} req - Request object from express router
+ * @param {object} req.body.decode._id - user id from auth middleware
+ * @param {object} res - Response object from express router
+ * @method PATCH
+ * @route /user
+ * @access Private
+ * @author Gabor
+ */
+exports.updateUser = async (req: Request, res: Response<UserResponse>) => {
   try {
     // Gets user ID
     const id = req.body.decoded._id
     let {user} = req.body
 
     user.email = user.email.toLowerCase().trim()
-
-    console.log('UsedID: ', id)
 
     // Verify and create social profiles
     user = verifyAndCreateSocial(user)
@@ -267,7 +275,7 @@ exports.updateUser = async (req: Request, res: Response) => {
         // Hide password before sending it in the response
         // DB not affected
         newUser.password = '***********'
-        
+
         // Generates a new auth token if the username or email has changed
         if(newUser.email !== req.body.decoded.email || newUser.username !== req.body.decoded.username) {
           const token = await newUser.generateAuthToken()
@@ -301,19 +309,17 @@ exports.updateUser = async (req: Request, res: Response) => {
  * It accepts an user ID checks it against the database
  * and will return a 200 success message.
  * @param {Request} req - Request object from express router
- * @param {object} req.query.id - user id
+ * @param {object} req.body.decoded._id - user id
  * @param {object} res - Response object from express router
  * @method Delete
  * @route /user
  * @access Private
  * @author Gabor
  */
-exports.deleteUser = async (req: Request, res: Response) => {
+exports.deleteUser = async (req: Request, res: Response<UserResponse>) => {
   try {
     // Gets user ID
     const id = req.body.decoded._id
-
-    console.log('UsedID: ', id)
 
     if(typeof id === 'string') {
       // Checks if user ID is a valid mongo ID
