@@ -270,11 +270,15 @@ exports.updateUser = async (req: Request, res: Response<UserResponse>) => {
       // Checks if user ID is a valid mongo ID
       if (mongoose.Types.ObjectId.isValid(id)) {
         // Update user and return new user details
-        const newUser = await model_users.findByIdAndUpdate(id, user, { new: true })
+        const newUser = await model_users.findByIdAndUpdate(id, user, { new: true }).select('-password')
 
-        // Hide password before sending it in the response
-        // DB not affected
-        newUser.password = '***********'
+        if(!newUser) {
+          // Returns auth error if any if checks fail
+          return res.status(401).json({
+            status: 401,
+            message: 'Invalid credentials'
+          })
+        }
 
         // Generates a new auth token if the username or email has changed
         if(newUser.email !== req.body.decoded.email || newUser.username !== req.body.decoded.username) {

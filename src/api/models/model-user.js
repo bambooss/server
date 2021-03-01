@@ -1,5 +1,6 @@
-import mongoose from 'mongoose'
-import jwt from 'jsonwebtoken'
+const mongoose = require('mongoose')
+const jwt = require('jsonwebtoken')
+const config = require('config')
 
 const userSchema = new mongoose.Schema({
   isDeleted: {
@@ -102,7 +103,7 @@ userSchema.methods.generateAuthToken = async function () {
   const user = this
   const token = jwt.sign(
     { _id: user._id, name: user.username, email: user.email },
-    process.env.BEARER_TOKEN_SECRET
+    config.get('bearerTokenSecret')
   )
   user.tokens = user.tokens.concat({
     token: token,

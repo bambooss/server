@@ -1,5 +1,6 @@
 import {Request, Response, NextFunction} from 'express'
 import jwt from 'jsonwebtoken'
+const config = require('config')
 
 /**
  * Authentication middleware,
@@ -18,7 +19,7 @@ exports.auth = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split(' ')[1]
 
     // Gets token secret
-    const bearerTokenSecret: string | undefined = process.env.BEARER_TOKEN_SECRET
+    const bearerTokenSecret: string | undefined = config.get('bearerTokenSecret')
 
     // Checks if token exists
     if (!token) {
