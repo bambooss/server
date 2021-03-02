@@ -29,8 +29,6 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Please provide your password'],
-    minlength: [8, 'The password must be at least 8 characters long'],
-    maxlength: [128, 'The username must be at most 128 characters long'],
     trim: true,
   },
   githubURL: {
