@@ -1,9 +1,9 @@
-const mongoose = require('mongoose')
 const model_user = require('../src/api/models/model-user')
 
 let chai = require('chai')
 let chaiHttp = require('chai-http')
 let server = require('../src/server.ts')
+
 chai.use(chaiHttp)
 chai.config.includeStack = false
 let expect = chai.expect
@@ -11,7 +11,7 @@ let expect = chai.expect
 //Our parent block
 describe('Users', () => {
   before((done) => { //Before test we empty the database
-    model_user.remove({}, (err) => {
+    model_user.remove({}, () => {
       done()
     })
   })
@@ -40,7 +40,7 @@ describe('Users', () => {
         .send(body)
         .end((err, res) => {
           expect(res, 'res.status should be 201').to.have.status(201)
-          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'isDeleted', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
+          expect(res.body.user, 'res.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'isDeleted', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
           expect(res.body.user.username, 'Usernames don\'t match').to.equal(body.user.username)
           expect(res.body.user.email, 'Emails don\'t match').to.equal(body.user.email)
           expect(res.body.user.password, 'Password should be hidden').to.equal('***********')
@@ -199,8 +199,6 @@ describe('Users', () => {
 
   describe('POST /user/login', () => {
 
-    let createdUser = {}
-
     it('it should create a new user (All fields correct)', (done) => {
       const body = {
         user: {
@@ -244,7 +242,7 @@ describe('Users', () => {
 
       const body= {
         user: {
-          email: 'csecsi85@gmail.com',
+          email: ' Csecsi85@gmail.com ',
           password: '12345678a'
         }
       }
@@ -252,9 +250,51 @@ describe('Users', () => {
         .post('/user/login')
         .send(body)
         .end((err, res) => {
-          console.log(res.body)
+          expect(res, 'res.status should be 200').to.have.status(200)
+          expect(res.body.user.email, 'Email is not lowercase or trimmed properly').to.be.equal(body.user.email.trim().toLowerCase())
+          expect(res.body.user, 'res.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'isDeleted', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
+          expect(res.body.user.password, 'Password should be hidden').to.equal('***********')
+          done()
+        })
+    })
+
+    it('it should respond with invalid credentials for not registered user with status 401', (done) => {
+
+      const body= {
+        user: {
+          email: 'csecsi886@gmail.com',
+          password: '12345678a'
+        }
+      }
+
+      chai.request(server)
+        .post('/user/login')
+        .send(body)
+        .end((err, res) => {
+          expect(res, 'res.status should be 401').to.have.status(401)
+          expect(res.body.message).to.equal('Invalid credentials')
+          done()
+        })
+    })
+
+    it('it should respond with invalid credentials for incorrect password with status 401', (done) => {
+
+      const body= {
+        user: {
+          email: 'csecsi85@gmail.com',
+          password: '12345678aa'
+        }
+      }
+
+      chai.request(server)
+        .post('/user/login')
+        .send(body)
+        .end((err, res) => {
+          expect(res, 'res.status should be 401').to.have.status(401)
+          expect(res.body.message).to.equal('Invalid credentials')
           done()
         })
     })
   })
+
 })
