@@ -322,22 +322,14 @@ exports.updateUser = async (req: Request, res: Response<UserResponse>) => {
           })
         }
 
-        // Generates a new auth token if the username or email has changed
-        if(newUser.email !== req.body.decoded.email || newUser.username !== req.body.decoded.username) {
-          const token = await newUser.generateAuthToken()
-
-          return res.status(200).json({
-            status: 200,
-            message: 'Update successful',
-            user: newUser,
-            token
-          })
-        }
+        // Generates a new auth token
+        const token = await newUser.generateAuthToken()
 
         return res.status(200).json({
           status: 200,
           message: 'Update successful',
-          user: newUser
+          user: newUser,
+          token
         })
       }
     }

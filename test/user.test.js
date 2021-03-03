@@ -354,9 +354,6 @@ describe('Users', () => {
 
   describe('DELETE /user', () => {
     let createdUser = {}
-    const getUserProfile = async () => {
-      await model_user.findById(createdUser._id)
-    }
 
     it('it should create a new user (All fields correct)', (done) => {
       const body = {
@@ -458,6 +455,7 @@ describe('Users', () => {
           expect(res.body.user.bio, 'Bios don\'t match').to.be.deep.equal(body.user.bio)
           expect(res.body.user.isDeleted, 'isDeleted should be false').to.be.false
           expect(res.body.user.tokens, 'Token is missing').to.have.length(1)
+          delete res.body.user.password
           createdUserBody = res.body
           done()
         })
@@ -475,6 +473,7 @@ describe('Users', () => {
           expect(res.body.user.token, 'Token is not different').to.be.not.equal(createdUserBody.user.tokens[0].token)
           expect(res.body.user.avatar, 'Something wrong with gravatar').to.not.be.equal(createdUserBody.user.avatar)
           expect(res.body.user, 'req.body.user shouldn\'t have password key').not.to.include.keys('password')
+          createdUserBody = res.body
           done()
         })
     })
@@ -484,12 +483,50 @@ describe('Users', () => {
       chai.request(server)
         .patch('/user')
         .send(createdUserBody)
-        .set('Authorization', `Bearer ${createdUserBody.user.tokens[0].token}`)
+        .set('Authorization', `Bearer ${createdUserBody.user.tokens[1].token}`)
         .end((err, res) => {
           expect(res, 'res.status should be 200').to.have.status(200)
           expect(res.body.user.username).to.equal(createdUserBody.user.username)
-          expect(res.body.user.token, 'Token is not different').to.be.not.equal(createdUserBody.user.tokens[0].token)
+          expect(res.body.user.token, 'Token is not different').to.be.not.equal(createdUserBody.user.tokens[1].token)
           expect(res.body.user, 'req.body.user shouldn\'t have password key').not.to.include.keys('password')
+          createdUserBody = res.body
+          done()
+        })
+    })
+
+    it('it should change everything but email, username and password', (done) => {
+      createdUserBody.user = {
+        email: createdUserBody.user.email,
+        username: createdUserBody.user.username,
+        githubURL: 'Csecsi86',
+        gitlabURL: 'csecsi86',
+        bitbucketURL: 'csecsi86',
+        linkedinURL: 'gabor-csecsetka-539765112',
+        technologies: ['HTML', 'CSS'],
+        languages: ['Hungarian', 'English'],
+        bio: 'This is my new test bio',
+        tokens: createdUserBody.user.tokens
+      }
+
+      chai.request(server)
+        .patch('/user')
+        .send(createdUserBody)
+        .set('Authorization', `Bearer ${createdUserBody.user.tokens[2].token}`)
+        .end((err, res) => {
+          expect(res, 'res.status should be 200').to.have.status(200)
+          expect(res.body.user.username).to.equal(createdUserBody.user.username)
+          expect(res.body.user.token, 'Token is not different').to.be.not.equal(createdUserBody.user.tokens[2].token)
+          expect(res.body.user, 'req.body.user shouldn\'t have password key').not.to.include.keys('password')
+          expect(res.body.user.githubURL, 'GitHub URL is not correct').to.equal(`https://github.com/${createdUserBody.user.githubURL}`)
+          expect(res.body.user.gitlabURL, 'GitLab URL is not correct').to.equal(`https://gitlab.com/${createdUserBody.user.gitlabURL}`)
+          expect(res.body.user.bitbucketURL, 'BitBucket URL is not correct').to.equal(`https://bitbucket.org/${createdUserBody.user.bitbucketURL}/`)
+          expect(res.body.user.linkedinURL, 'LinkedIn URL is not correct').to.equal(`https://www.linkedin.com/in/${createdUserBody.user.linkedinURL}/`)
+          expect(res.body.user.technologies, 'Technologies don\'t match').to.be.deep.equal(createdUserBody.user.technologies)
+          expect(res.body.user.languages, 'Languages don\'t match').to.be.deep.equal(createdUserBody.user.languages)
+          expect(res.body.user.bio, 'Bios don\'t match').to.be.deep.equal(createdUserBody.user.bio)
+          expect(res.body.user.isDeleted, 'isDeleted should be false').to.be.false
+          expect(res.body.user.tokens, 'Token is missing').to.have.length(4)
+          createdUserBody = res.body
           done()
         })
     })
