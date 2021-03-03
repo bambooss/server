@@ -17,6 +17,7 @@
 //    "no-console": 1,
     "@typescript-eslint/quotes": ["error", "single"],
     "quotes": ["warn", "single"],
-    "semi": ["error", "never"]
+    "semi": ["error", "never"],
+    "no-undef": 0
   }
 }

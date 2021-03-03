@@ -1,5 +1,6 @@
-import mongoose from 'mongoose'
-import jwt from 'jsonwebtoken'
+const mongoose = require('mongoose')
+const jwt = require('jsonwebtoken')
+const config = require('config')
 
 const userSchema = new mongoose.Schema({
   isDeleted: {
@@ -28,8 +29,6 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Please provide your password'],
-    minlength: [8, 'The password must be at least 8 characters long'],
-    maxlength: [128, 'The username must be at most 128 characters long'],
     trim: true,
   },
   githubURL: {
@@ -102,7 +101,7 @@ userSchema.methods.generateAuthToken = async function () {
   const user = this
   const token = jwt.sign(
     { _id: user._id, name: user.username, email: user.email },
-    process.env.BEARER_TOKEN_SECRET
+    config.get('bearerTokenSecret')
   )
   user.tokens = user.tokens.concat({
     token: token,
