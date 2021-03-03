@@ -293,6 +293,18 @@ exports.updateUser = async (req: Request, res: Response<UserResponse>) => {
 
     user.email = user.email.toLowerCase().trim()
 
+    if(user.email !== req.body.decoded.email) {
+      // Get avatar from Gravatar
+      user.avatar = await gravatar.url(user.email, {
+        s: '200',
+        r: 'pg',
+        d: 'mm',
+      })
+
+      // Construct Gravatar URL
+      user.avatar = `https:${user.avatar}`
+    }
+
     // Verify and create social profiles
     user = verifyAndCreateSocial(user)
 
@@ -316,7 +328,7 @@ exports.updateUser = async (req: Request, res: Response<UserResponse>) => {
 
           return res.status(200).json({
             status: 200,
-            message: 'Login successful',
+            message: 'Update successful',
             user: newUser,
             token
           })
@@ -324,7 +336,7 @@ exports.updateUser = async (req: Request, res: Response<UserResponse>) => {
 
         return res.status(200).json({
           status: 200,
-          message: 'Login successful',
+          message: 'Update successful',
           user: newUser
         })
       }
