@@ -1,7 +1,7 @@
 import express, {Request, Response} from 'express'
 const user = require('./router-user')
 const project = require('./router-project')
-const tag = require('./router-tag')
+const tag = require('./router-technology')
 const router = express.Router()
 
 router
@@ -11,7 +11,7 @@ router
   .use('/project', project)
 
 router
-  .use('/tag', tag)
+  .use('/technology', tag)
 
 router
   .all('*', (req: Request, res: Response) => {
