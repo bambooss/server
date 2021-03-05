@@ -45,6 +45,38 @@ exports.generateTechnologiesFromArray = async (req: Request, res: Response) => {
   }
 }
 
+exports.deleteOneTechnology = async (req: Request, res: Response) => {
+  try {
+    const {email} = req.body.decoded
+
+    if(email === 'csecsi85@gmail.com') {
+      const removedTechnology = await model_technology.findOneAndRemove({name: req.body.name})
+
+      if(removedTechnology) {
+        return res.status(200).json({
+          status: 200,
+          message: `${req.body.name} was successfully deleted`
+        })
+      }
+      return res.status(400).json({
+        status: 400,
+        message: 'Something went wrong'
+      })
+    } else {
+      return res.status(404).json({
+        status: 404,
+        message: 'page doesn\'t exist',
+      })
+    }
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
+
 exports.deleteAllTechnologies = async (req: Request, res: Response) => {
   try {
     const {email} = req.body.decoded
@@ -52,8 +84,8 @@ exports.deleteAllTechnologies = async (req: Request, res: Response) => {
     if(email === 'csecsi85@gmail.com') {
       await model_technology.remove({})
 
-      return res.status(201).json({
-        status: 201,
+      return res.status(200).json({
+        status: 200,
         message: 'All technologies were successfully deleted'
       })
     } else {
