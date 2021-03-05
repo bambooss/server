@@ -13,12 +13,16 @@ exports.generateTechnologiesFromArray = async (req: Request, res: Response) => {
           status: 1,
         }
 
-        const savedTechnology = await model_technology.create(techObj)
-        if(!savedTechnology) {
-          return res.status(500).json({
-            status: 500,
-            message: 'Something went wrong with tech creation'
-          })
+        const isExisting = await model_technology.findOne({name: tech})
+        if(!isExisting) {
+          const savedTechnology = await model_technology.create(techObj)
+          console.log(savedTechnology)
+          if(!savedTechnology) {
+            return res.status(500).json({
+              status: 500,
+              message: 'Something went wrong with tech creation'
+            })
+          }
         }
       })
 

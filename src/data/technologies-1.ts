@@ -88,6 +88,7 @@ const technologyArray: string[] = [
   'Unity',
   'PhoneGap',
   'NativeScript',
+  'Haskell',
 ]
 
 const sortedTechArray: string[] = technologyArray.sort()
