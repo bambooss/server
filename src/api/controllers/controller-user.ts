@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import gravatar from 'gravatar'
 import mongoose from 'mongoose'
 const model_users = require('../models/model-user')
+const model_technology = require('../models/model-technology')
 
 /**
  * Controller to create new users,
@@ -79,6 +80,13 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
         message: 'Something went wrong!',
       })
     }
+
+    // Add technologies to the technologies DB
+    // user.technologies.map(async (tech: string) => {
+    //   await model_technology.findOneAndUpdate({name: tech}, {$push: {users: user._id}})
+    // })
+
+    await model_technology.updateMany({name: user.technologies}, {$push: {users: user._id}})
 
     // Generate auth token
     const token = await user.generateAuthToken()
@@ -311,6 +319,11 @@ exports.updateUser = async (req: Request, res: Response<UserResponse>) => {
     if(typeof id === 'string') {
       // Checks if user ID is a valid mongo ID
       if (mongoose.Types.ObjectId.isValid(id)) {
+        //Updates technologies users with new values
+        //TODO: Make it more efficient by combining the two if possible
+        await model_technology.updateMany({users: id}, {$pull: {users: id}})
+        await model_technology.updateMany({name: user.technologies}, {$push: {users: id}})
+
         // Update user and return new user details
         const newUser = await model_users.findByIdAndUpdate(id, user, { new: true }).select('-password')
 
@@ -363,12 +376,14 @@ exports.deleteUser = async (req: Request, res: Response<UserResponse>) => {
       // Checks if user ID is a valid mongo ID
       if (mongoose.Types.ObjectId.isValid(id)) {
         // Gets user data form DB and removes unnecessary fields
-        const user = await model_users.findByIdAndUpdate(id, { isDeleted: true }, {new: true})
-        // Is isDeleted changed to true, success
-        if(user.isDeleted) {
+        const user = await model_users.findByIdAndDelete(id)
+        // If there was a user
+        if(user) {
+          // Remove userID from technologies
+          await model_technology.updateMany({users: id}, {$pull: {users: id}})
           return res.status(200).json({
             status: 200,
-            message: 'User marked for deletion'
+            message: 'User is deleted'
           })
         }
       }

@@ -9,19 +9,19 @@ const technologiesSchema = new mongoose.Schema({
   users: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'users',
     }
   ],
   projects: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Project',
+      ref: 'projects',
     }
   ],
   jobs: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Job',
+      ref: 'jobs',
     }
   ],
   status: {

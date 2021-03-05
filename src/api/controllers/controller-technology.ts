@@ -16,7 +16,6 @@ exports.generateTechnologiesFromArray = async (req: Request, res: Response) => {
         const isExisting = await model_technology.findOne({name: tech})
         if(!isExisting) {
           const savedTechnology = await model_technology.create(techObj)
-          console.log(savedTechnology)
           if(!savedTechnology) {
             return res.status(500).json({
               status: 500,
@@ -32,15 +31,40 @@ exports.generateTechnologiesFromArray = async (req: Request, res: Response) => {
       })
 
     } else {
-      res.status(404).json({
+      return res.status(404).json({
         status: 404,
         message: 'page doesn\'t exist',
       })
     }
-    res.send('technology')
   } catch (error) {
     console.log(error)
-    res.status(500).json({
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
+
+exports.deleteAllTechnologies = async (req: Request, res: Response) => {
+  try {
+    const {email} = req.body.decoded
+
+    if(email === 'csecsi85@gmail.com') {
+      await model_technology.remove({})
+
+      return res.status(201).json({
+        status: 201,
+        message: 'All technologies were successfully deleted'
+      })
+    } else {
+      return res.status(404).json({
+        status: 404,
+        message: 'page doesn\'t exist',
+      })
+    }
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
       status: 500,
       message: error.message
     })
