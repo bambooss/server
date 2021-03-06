@@ -3,10 +3,6 @@ const jwt = require('jsonwebtoken')
 const config = require('config')
 
 const userSchema = new mongoose.Schema({
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
   avatar: {
     type: String,
     default: '',

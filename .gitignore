@@ -93,3 +93,6 @@ ssl/
 
 *.env
 docker-compose.yaml
+
+config/
+/config/
