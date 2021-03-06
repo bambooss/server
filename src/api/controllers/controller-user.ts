@@ -91,22 +91,24 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
     // Generate auth token
     const token = await user.generateAuthToken()
 
-    // For testing purposes
-    if(process.env.NODE_ENV === 'test' && user.email !== 'csecsi86@gmail.com') {
-      // Hide password before sending it in the response
-      // DB not affected
-      user.password = '***********'
-    } else if (process.env.NODE_ENV !== 'test') {
-      // Hide password before sending it in the response
-      // DB not affected
-      user.password = '***********'
-    }
+    const newUser = await model_users.findOne(user._id).select('-password')
+
+    // // For testing purposes
+    // if(process.env.NODE_ENV === 'test' && user.email !== 'csecsi86@gmail.com') {
+    //   // Hide password before sending it in the response
+    //   // DB not affected
+    //   user.password = '***********'
+    // } else if (process.env.NODE_ENV !== 'test') {
+    //   // Hide password before sending it in the response
+    //   // DB not affected
+    //   user.password = '***********'
+    // }
 
     return res.status(201).json({
       status: 201,
       message: 'User was created successfully',
       token,
-      user
+      user: newUser
     })
 
   } catch (error) {

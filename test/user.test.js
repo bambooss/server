@@ -11,7 +11,7 @@ let expect = chai.expect
 //Our parent block
 describe('Users', () => {
   before((done) => { //Before test we empty the database
-    model_user.remove({}, () => {
+    model_user.deleteMany({}, () => {
       done()
     })
   })
@@ -40,7 +40,7 @@ describe('Users', () => {
         .send(body)
         .end((err, res) => {
           expect(res, 'res.status should be 201').to.have.status(201)
-          expect(res.body.user, 'res.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'isDeleted', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
+          expect(res.body.user, 'res.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
           expect(res.body.user.username, 'Usernames don\'t match').to.equal(body.user.username)
           expect(res.body.user.email, 'Emails don\'t match').to.equal(body.user.email)
           expect(res.body.user.password, 'Password should be hidden').to.equal('***********')
@@ -51,7 +51,6 @@ describe('Users', () => {
           expect(res.body.user.technologies, 'Technologies don\'t match').to.be.deep.equal(body.user.technologies)
           expect(res.body.user.languages, 'Languages don\'t match').to.be.deep.equal(body.user.languages)
           expect(res.body.user.bio, 'Bios don\'t match').to.be.deep.equal(body.user.bio)
-          expect(res.body.user.isDeleted, 'isDeleted should be false').to.be.false
           expect(res.body.user.tokens, 'Token is missing').to.have.length(1)
           done()
         })
@@ -221,7 +220,7 @@ describe('Users', () => {
         .send(body)
         .end((err, res) => {
           expect(res, 'res.status should be 201').to.have.status(201)
-          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'isDeleted', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
+          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
           expect(res.body.user.username, 'Usernames don\'t match').to.equal(body.user.username)
           expect(res.body.user.email, 'Emails don\'t match').to.equal(body.user.email)
           expect(res.body.user.password, 'Password should be hidden').to.equal('***********')
@@ -232,7 +231,6 @@ describe('Users', () => {
           expect(res.body.user.technologies, 'Technologies don\'t match').to.be.deep.equal(body.user.technologies)
           expect(res.body.user.languages, 'Languages don\'t match').to.be.deep.equal(body.user.languages)
           expect(res.body.user.bio, 'Bios don\'t match').to.be.deep.equal(body.user.bio)
-          expect(res.body.user.isDeleted, 'isDeleted should be false').to.be.false
           expect(res.body.user.tokens, 'Token is missing').to.have.length(1)
           done()
         })
@@ -252,7 +250,7 @@ describe('Users', () => {
         .end((err, res) => {
           expect(res, 'res.status should be 200').to.have.status(200)
           expect(res.body.user.email, 'Email is not lowercase or trimmed properly').to.be.equal(body.user.email.trim().toLowerCase())
-          expect(res.body.user, 'res.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'isDeleted', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
+          expect(res.body.user, 'res.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
           expect(res.body.user.password, 'Password should be hidden').to.equal('***********')
           done()
         })
@@ -322,7 +320,7 @@ describe('Users', () => {
         .send(body)
         .end((err, res) => {
           expect(res, 'res.status should be 201').to.have.status(201)
-          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'isDeleted', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
+          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
           expect(res.body.user.username, 'Usernames don\'t match').to.equal(body.user.username)
           expect(res.body.user.email, 'Emails don\'t match').to.equal(body.user.email)
           expect(res.body.user.password, 'Password should be hidden').to.equal('***********')
@@ -333,7 +331,6 @@ describe('Users', () => {
           expect(res.body.user.technologies, 'Technologies don\'t match').to.be.deep.equal(body.user.technologies)
           expect(res.body.user.languages, 'Languages don\'t match').to.be.deep.equal(body.user.languages)
           expect(res.body.user.bio, 'Bios don\'t match').to.be.deep.equal(body.user.bio)
-          expect(res.body.user.isDeleted, 'isDeleted should be false').to.be.false
           expect(res.body.user.tokens, 'Token is missing').to.have.length(1)
           createdUser = res.body.user
           done()
@@ -346,7 +343,7 @@ describe('Users', () => {
         .set('Authorization', `Bearer ${createdUser.tokens[0].token}`)
         .end((err, res) => {
           expect(res, 'res.status should be 200').to.have.status(200)
-          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('username', 'email', 'isDeleted', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio')
+          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('username', 'email', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio')
           done()
         })
     })
@@ -377,7 +374,7 @@ describe('Users', () => {
         .send(body)
         .end((err, res) => {
           expect(res, 'res.status should be 201').to.have.status(201)
-          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'isDeleted', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
+          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
           expect(res.body.user.username, 'Usernames don\'t match').to.equal(body.user.username)
           expect(res.body.user.email, 'Emails don\'t match').to.equal(body.user.email)
           expect(res.body.user.password, 'Password should be hidden').to.equal('***********')
@@ -388,7 +385,6 @@ describe('Users', () => {
           expect(res.body.user.technologies, 'Technologies don\'t match').to.be.deep.equal(body.user.technologies)
           expect(res.body.user.languages, 'Languages don\'t match').to.be.deep.equal(body.user.languages)
           expect(res.body.user.bio, 'Bios don\'t match').to.be.deep.equal(body.user.bio)
-          expect(res.body.user.isDeleted, 'isDeleted should be false').to.be.false
           expect(res.body.user.tokens, 'Token is missing').to.have.length(1)
           createdUser = res.body.user
           done()
@@ -403,16 +399,6 @@ describe('Users', () => {
           expect(res, 'res.status should be 200').to.have.status(200)
           expect(res.body, 'res.body is missing status or message field').to.have.keys('status', 'message')
           expect(res.body, 'res.body has user or token fields').not.to.have.keys('user', 'token')
-          done()
-        })
-    })
-
-    it('it should have isDeleted: true', (done) => {
-      chai.request(server)
-        .get('/user')
-        .set('Authorization', `Bearer ${createdUser.tokens[0].token}`)
-        .end((err, res) => {
-          expect(res.body.user.isDeleted, 'isDeleted should be true').to.be.true
           done()
         })
     })
@@ -443,7 +429,7 @@ describe('Users', () => {
         .send(body)
         .end((err, res) => {
           expect(res, 'res.status should be 201').to.have.status(201)
-          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'isDeleted', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
+          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
           expect(res.body.user.username, 'Usernames don\'t match').to.equal(body.user.username)
           expect(res.body.user.email, 'Emails don\'t match').to.equal(body.user.email)
           expect(res.body.user.githubURL, 'GitHub URL is not correct').to.equal(`https://github.com/${body.user.githubURL}`)
@@ -453,7 +439,6 @@ describe('Users', () => {
           expect(res.body.user.technologies, 'Technologies don\'t match').to.be.deep.equal(body.user.technologies)
           expect(res.body.user.languages, 'Languages don\'t match').to.be.deep.equal(body.user.languages)
           expect(res.body.user.bio, 'Bios don\'t match').to.be.deep.equal(body.user.bio)
-          expect(res.body.user.isDeleted, 'isDeleted should be false').to.be.false
           expect(res.body.user.tokens, 'Token is missing').to.have.length(1)
           delete res.body.user.password
           createdUserBody = res.body
@@ -524,7 +509,6 @@ describe('Users', () => {
           expect(res.body.user.technologies, 'Technologies don\'t match').to.be.deep.equal(createdUserBody.user.technologies)
           expect(res.body.user.languages, 'Languages don\'t match').to.be.deep.equal(createdUserBody.user.languages)
           expect(res.body.user.bio, 'Bios don\'t match').to.be.deep.equal(createdUserBody.user.bio)
-          expect(res.body.user.isDeleted, 'isDeleted should be false').to.be.false
           expect(res.body.user.tokens, 'Token is missing').to.have.length(4)
           createdUserBody = res.body
           done()

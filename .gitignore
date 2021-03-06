@@ -95,3 +95,4 @@ ssl/
 docker-compose.yaml
 
 config/
+/config/
