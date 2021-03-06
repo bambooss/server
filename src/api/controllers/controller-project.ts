@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 
 const model_projects = require('../models/model-project')
 const model_users = require('../models/model-user')
+const model_technology = require('../models/model-technology')
 
 exports.createProject = async (req: Request, res: Response) => {
   try {
@@ -38,6 +39,8 @@ exports.createProject = async (req: Request, res: Response) => {
         message: 'Something went wrong!',
       })
     }
+
+    await model_technology.updateMany({name: savedProject.technologies}, {$push: {projects: savedProject._id}})
 
     return res.status(201).json({
       status: 201,

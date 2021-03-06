@@ -1,10 +1,6 @@
 const mongoose = require('mongoose')
 
 const projectSchema = new mongoose.Schema({
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
   name: {
     type: String,
     required: true,
