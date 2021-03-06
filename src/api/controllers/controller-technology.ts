@@ -22,7 +22,7 @@ exports.generateTechnologiesFromArray = async (req: Request, res: Response) => {
     // Checks if email is an admin email
     if(email === 'csecsi85@gmail.com' || email === 'mazbsorz@gmail.com') {
       // Goes through the array of technology names
-      sortedTechArray.map(async (tech: string) => {
+      await sortedTechArray.map(async (tech: string) => {
         //makes an object out of them
         const techObj = {
           name: tech,
@@ -131,7 +131,7 @@ exports.updateTechnologyName = async (req: Request, res: Response) => {
 
     // Checks if email is an admin email
     if(email === 'csecsi85@gmail.com' || email === 'mazbsorz@gmail.com') {
-      // searches for the olde technology name and replaces the name with the new one
+      // searches for the old technology name and replaces the name with the new one
       const updatedTechnologyName = await model_technology.findOneAndUpdate({name: technologyName}, {name: newTechnologyName})
       // If success
       if(updatedTechnologyName) {

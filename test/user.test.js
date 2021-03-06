@@ -40,10 +40,9 @@ describe('Users', () => {
         .send(body)
         .end((err, res) => {
           expect(res, 'res.status should be 201').to.have.status(201)
-          expect(res.body.user, 'res.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
+          expect(res.body.user, 'res.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
           expect(res.body.user.username, 'Usernames don\'t match').to.equal(body.user.username)
           expect(res.body.user.email, 'Emails don\'t match').to.equal(body.user.email)
-          expect(res.body.user.password, 'Password should be hidden').to.equal('***********')
           expect(res.body.user.githubURL, 'GitHub URL is not correct').to.equal(`https://github.com/${body.user.githubURL}`)
           expect(res.body.user.gitlabURL, 'GitLab URL is not correct').to.equal(`https://gitlab.com/${body.user.gitlabURL}`)
           expect(res.body.user.bitbucketURL, 'BitBucket URL is not correct').to.equal(`https://bitbucket.org/${body.user.bitbucketURL}/`)
@@ -109,7 +108,6 @@ describe('Users', () => {
         .send(body)
         .end((err, res) => {
           expect(res, 'res.status should be 201').to.have.status(201)
-          expect(res.body.user.password).to.include('$2a$11$')
           done()
         })
     })
@@ -220,10 +218,9 @@ describe('Users', () => {
         .send(body)
         .end((err, res) => {
           expect(res, 'res.status should be 201').to.have.status(201)
-          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
+          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
           expect(res.body.user.username, 'Usernames don\'t match').to.equal(body.user.username)
           expect(res.body.user.email, 'Emails don\'t match').to.equal(body.user.email)
-          expect(res.body.user.password, 'Password should be hidden').to.equal('***********')
           expect(res.body.user.githubURL, 'GitHub URL is not correct').to.equal(`https://github.com/${body.user.githubURL}`)
           expect(res.body.user.gitlabURL, 'GitLab URL is not correct').to.equal(`https://gitlab.com/${body.user.gitlabURL}`)
           expect(res.body.user.bitbucketURL, 'BitBucket URL is not correct').to.equal(`https://bitbucket.org/${body.user.bitbucketURL}/`)
@@ -320,10 +317,9 @@ describe('Users', () => {
         .send(body)
         .end((err, res) => {
           expect(res, 'res.status should be 201').to.have.status(201)
-          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
+          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
           expect(res.body.user.username, 'Usernames don\'t match').to.equal(body.user.username)
           expect(res.body.user.email, 'Emails don\'t match').to.equal(body.user.email)
-          expect(res.body.user.password, 'Password should be hidden').to.equal('***********')
           expect(res.body.user.githubURL, 'GitHub URL is not correct').to.equal(`https://github.com/${body.user.githubURL}`)
           expect(res.body.user.gitlabURL, 'GitLab URL is not correct').to.equal(`https://gitlab.com/${body.user.gitlabURL}`)
           expect(res.body.user.bitbucketURL, 'BitBucket URL is not correct').to.equal(`https://bitbucket.org/${body.user.bitbucketURL}/`)
@@ -374,10 +370,9 @@ describe('Users', () => {
         .send(body)
         .end((err, res) => {
           expect(res, 'res.status should be 201').to.have.status(201)
-          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
+          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
           expect(res.body.user.username, 'Usernames don\'t match').to.equal(body.user.username)
           expect(res.body.user.email, 'Emails don\'t match').to.equal(body.user.email)
-          expect(res.body.user.password, 'Password should be hidden').to.equal('***********')
           expect(res.body.user.githubURL, 'GitHub URL is not correct').to.equal(`https://github.com/${body.user.githubURL}`)
           expect(res.body.user.gitlabURL, 'GitLab URL is not correct').to.equal(`https://gitlab.com/${body.user.gitlabURL}`)
           expect(res.body.user.bitbucketURL, 'BitBucket URL is not correct').to.equal(`https://bitbucket.org/${body.user.bitbucketURL}/`)
@@ -429,7 +424,7 @@ describe('Users', () => {
         .send(body)
         .end((err, res) => {
           expect(res, 'res.status should be 201').to.have.status(201)
-          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'password', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
+          expect(res.body.user, 'req.body.user is missing keys').to.be.an('object').to.include.all.keys('_id', 'username', 'email', 'avatar', 'githubURL', 'gitlabURL', 'bitbucketURL', 'linkedinURL', 'technologies', 'languages', 'bio', 'tokens', 'createdAt', 'updatedAt', '__v', 'resetPasswordToken')
           expect(res.body.user.username, 'Usernames don\'t match').to.equal(body.user.username)
           expect(res.body.user.email, 'Emails don\'t match').to.equal(body.user.email)
           expect(res.body.user.githubURL, 'GitHub URL is not correct').to.equal(`https://github.com/${body.user.githubURL}`)
@@ -440,7 +435,6 @@ describe('Users', () => {
           expect(res.body.user.languages, 'Languages don\'t match').to.be.deep.equal(body.user.languages)
           expect(res.body.user.bio, 'Bios don\'t match').to.be.deep.equal(body.user.bio)
           expect(res.body.user.tokens, 'Token is missing').to.have.length(1)
-          delete res.body.user.password
           createdUserBody = res.body
           done()
         })
