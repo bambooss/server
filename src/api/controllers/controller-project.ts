@@ -56,3 +56,31 @@ exports.createProject = async (req: Request, res: Response) => {
     })
   }
 }
+
+exports.getProjectById = async (req: Request, res: Response) => {
+  try {
+    const projectId = req.params.id
+
+    const project = await model_projects.findById(projectId)
+
+    if(!project) {
+      return res.status(404).json({
+        status: 404,
+        message: 'Project not found'
+      })
+    }
+
+    return res.status(200).json({
+      status: 200,
+      message: 'Successfully retrieved project',
+      project
+    })
+
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
