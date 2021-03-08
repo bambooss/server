@@ -92,7 +92,7 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
     const page = req.query.page || '1'
     const itemsPerPage = req.query.itemsPerPage || '10000'
     const sort = req.query.sort || '+name'
-    let sortObj = {}
+    let sortObj
     let itemsToSkip
 
     switch (sort) {
@@ -126,6 +126,11 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
           projects: filteredProjects
         })
       }
+    } else {
+      return res.status(400).json({
+        status: 400,
+        message: 'Invalid type of input'
+      })
     }
   } catch (error) {
     console.log(error)

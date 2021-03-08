@@ -81,28 +81,12 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
       })
     }
 
-    // Add technologies to the technologies DB
-    // user.technologies.map(async (tech: string) => {
-    //   await model_technology.findOneAndUpdate({name: tech}, {$push: {users: user._id}})
-    // })
-
     await model_technology.updateMany({name: user.technologies}, {$push: {users: user._id}})
 
     // Generate auth token
     const token = await user.generateAuthToken()
 
     const newUser = await model_users.findOne(user._id).select('-password')
-
-    // // For testing purposes
-    // if(process.env.NODE_ENV === 'test' && user.email !== 'csecsi86@gmail.com') {
-    //   // Hide password before sending it in the response
-    //   // DB not affected
-    //   user.password = '***********'
-    // } else if (process.env.NODE_ENV !== 'test') {
-    //   // Hide password before sending it in the response
-    //   // DB not affected
-    //   user.password = '***********'
-    // }
 
     return res.status(201).json({
       status: 201,
@@ -164,10 +148,6 @@ exports.loginUser = async (req: Request<LoginUserRequest>,
 
     // Generates new auth token
     const token = await foundUser.generateAuthToken()
-
-    // Hide password before sending it in the response
-    // DB not affected
-    foundUser.password = '***********'
 
     return res.status(200).json({
       status: 200,
