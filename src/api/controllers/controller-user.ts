@@ -81,40 +81,13 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
       })
     }
 
-    // Add technologies to the technologies DB
-    // user.technologies.map(async (tech: string) => {
-    //   await model_technology.findOneAndUpdate({name: tech}, {$push: {users: user._id}})
-    // })
-
     await model_technology.updateMany({name: user.technologies}, {$push: {users: user._id}})
 
     // Generate auth token
     const token = await user.generateAuthToken()
 
-    const newUser = {
-      avatar: user.avatar,
-      githubURL: user.githubURL,
-      gitlabURL: user.gitlabURL,
-      bitbucketURL: user.bitbucketURL,
-      linkedinURL: user.linkedinURL,
-      technologies: user.technologies,
-      languages: user.languages,
-      bio: user.bio,
-      _id: user._id,
-      username: user.username,
-      email: user.email,
-    }
-
-    // // For testing purposes
-    // if(process.env.NODE_ENV === 'test' && user.email !== 'csecsi86@gmail.com') {
-    //   // Hide password before sending it in the response
-    //   // DB not affected
-    //   user.password = '***********'
-    // } else if (process.env.NODE_ENV !== 'test') {
-    //   // Hide password before sending it in the response
-    //   // DB not affected
-    //   user.password = '***********'
-    // }
+    // Slim down user to necessary fields
+    const newUser = createUserResponse(user)
 
     return res.status(201).json({
       status: 201,
@@ -177,22 +150,8 @@ exports.loginUser = async (req: Request<LoginUserRequest>,
     // Generates new auth token
     const token = await foundUser.generateAuthToken()
 
-    // Hide password before sending it in the response
-    // DB not affected
-    foundUser.password = '***********'
-    const loggedInUser = {
-      avatar: foundUser.avatar,
-      githubURL: foundUser.githubURL,
-      gitlabURL: foundUser.gitlabURL,
-      bitbucketURL: foundUser.bitbucketURL,
-      linkedinURL: foundUser.linkedinURL,
-      technologies: foundUser.technologies,
-      languages: foundUser.languages,
-      bio: foundUser.bio,
-      _id: foundUser._id,
-      username: foundUser.username,
-      email: foundUser.email,
-    }
+    // Slim down user to necessary fields
+    const loggedInUser = createUserResponse(foundUser)
 
     return res.status(200).json({
       status: 200,
@@ -270,21 +229,12 @@ exports.getUserProfile = async (req: Request, res: Response<UserResponse>) => {
       // Checks if user ID is a valid mongo ID
       if(mongoose.Types.ObjectId.isValid(id)) {
         // Gets user data form DB and removes unnecessary fields
-        const user = await model_users
-          .findById(id)
-          .select(
-            [
-              '-tokens',
-              '-password',
-              '-resetPasswordToken',
-              '-__v',
-              '-createdAt',
-              '-updatedAt',
-              '-_id'
-            ]
-          )
+        const foundUser = await model_users.findById(id)
+
         // If user found returns the user
-        if(user) {
+        if(foundUser) {
+          // Slim down user to necessary fields
+          const user = createUserResponse(foundUser)
           return res.status(200).json({
             status: 200,
             message: `Profile of ${user.username}`,
@@ -364,11 +314,13 @@ exports.updateUser = async (req: Request, res: Response<UserResponse>) => {
 
         // Generates a new auth token
         const token = await newUser.generateAuthToken()
+        // Slim down user to necessary fields
+        const shapedUser = createUserResponse(newUser)
 
         return res.status(200).json({
           status: 200,
           message: 'Update successful',
-          user: newUser,
+          user: shapedUser,
           token
         })
       }
@@ -456,6 +408,23 @@ const verifyAndCreateSocial = (user:
   return user
 }
 
+// Takes the user object and shapes it to a slimmed down version
+const createUserResponse = (user: userResponse) => {
+  return {
+    _id: user._id,
+    username: user.username,
+    email: user.email,
+    avatar: user.avatar,
+    bio: user.bio,
+    githubURL: user.githubURL,
+    gitlabURL: user.gitlabURL,
+    bitbucketURL: user.bitbucketURL,
+    linkedinURL: user.linkedinURL,
+    technologies: user.technologies,
+    languages: user.languages,
+  }
+}
+
 ////////////////
 // INTERFACES //
 ////////////////
@@ -492,4 +461,18 @@ interface LoginUserRequest {
       password: string,
     }
   }
+}
+
+interface userResponse {
+  avatar: string,
+  githubURL: string,
+  gitlabURL: string,
+  bitbucketURL: string,
+  linkedinURL: string,
+  technologies: string[],
+  languages: string[],
+  bio: string,
+  _id: mongoose.Types.ObjectId,
+  username: string,
+  email: string,
 }
