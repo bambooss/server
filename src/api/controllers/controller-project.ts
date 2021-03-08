@@ -141,6 +141,22 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
   }
 }
 
+exports.updateProjectById = async (req: Request, res: Response) => {
+  try {
+    const projectId = req.params.id
+    const userId = req.body.decoded._id
+
+    
+    res.send('updateUserById')
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
+
 exports.deleteProjectById = async (req: Request, res: Response) => {
   try {
     const projectId = req.params.id
