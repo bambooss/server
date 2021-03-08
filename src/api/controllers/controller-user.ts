@@ -91,7 +91,19 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
     // Generate auth token
     const token = await user.generateAuthToken()
 
-    const newUser = await model_users.findOne(user._id).select('-password')
+    const newUser = {
+      avatar: user.avatar,
+      githubURL: user.githubURL,
+      gitlabURL: user.gitlabURL,
+      bitbucketURL: user.bitbucketURL,
+      linkedinURL: user.linkedinURL,
+      technologies: user.technologies,
+      languages: user.languages,
+      bio: user.bio,
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+    }
 
     // // For testing purposes
     // if(process.env.NODE_ENV === 'test' && user.email !== 'csecsi86@gmail.com') {
@@ -168,12 +180,25 @@ exports.loginUser = async (req: Request<LoginUserRequest>,
     // Hide password before sending it in the response
     // DB not affected
     foundUser.password = '***********'
+    const loggedInUser = {
+      avatar: foundUser.avatar,
+      githubURL: foundUser.githubURL,
+      gitlabURL: foundUser.gitlabURL,
+      bitbucketURL: foundUser.bitbucketURL,
+      linkedinURL: foundUser.linkedinURL,
+      technologies: foundUser.technologies,
+      languages: foundUser.languages,
+      bio: foundUser.bio,
+      _id: foundUser._id,
+      username: foundUser.username,
+      email: foundUser.email,
+    }
 
     return res.status(200).json({
       status: 200,
       message: 'Login successful',
       token,
-      user: foundUser
+      user: loggedInUser
     })
 
   } catch (error) {
