@@ -16,6 +16,10 @@ const jobsSchema = new mongoose.Schema({
     type: Array,
     required: true
   },
+  project: {
+    type: mongoose.Types.ObjectId,
+    ref: 'projects',
+  }
 })
 
 const jobs = mongoose.model('jobs', jobsSchema)
