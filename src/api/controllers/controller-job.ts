@@ -44,7 +44,42 @@ exports.createJob = async (req: Request, res: Response) => {
 
     return res.status(201).json({
       status: 201,
-      message: 'Job added successfully'
+      message: 'Job added successfully',
+      job: createdJob
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
+
+exports.getJobById = async (req: Request, res: Response) => {
+  try {
+    const jobId = req.params.id
+    const job = await model_job.findById(jobId)
+    if (!job) {
+      return res.status(404).json({
+        status: 404,
+        message: 'Job not found'
+      })
+    }
+    const project = await model_projects.findById(job.project)
+
+    if (!project) {
+      return res.status(404).json({
+        status: 404,
+        message: 'No project found with this ID'
+      })
+    }
+
+    return res.status(200).json({
+      status: 200,
+      message: 'Job found',
+      job,
+      project
     })
   } catch (error) {
     console.log(error)
