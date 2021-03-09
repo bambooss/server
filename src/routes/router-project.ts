@@ -1,6 +1,12 @@
 import express from 'express'
 
-const { createProject, getProjectById, getAllProjects, updateProjectById, deleteProjectById } = require('../api/controllers/controller-project')
+const {
+  createProject,
+  getProjectById,
+  getAllProjects,
+  updateProjectById,
+  deleteProjectById
+} = require('../api/controllers/controller-project')
 const { auth } = require('../middlewares/middleware-auth')
 
 const router = express.Router()

@@ -18,13 +18,15 @@ const model_technology = require('../models/model-technology')
  * @access Public
  * @author Gabor
  */
-exports.createUser = async (req: Request<RegisterUserRequest>,
-                            res: Response<UserResponse>) => {
+exports.createUser = async (
+  req: Request<RegisterUserRequest>,
+  res: Response<UserResponse>
+) => {
   try {
     let { user } = req.body
 
     // Check if user already exists
-    if(await model_users.findOne({email: user.email})) {
+    if (await model_users.findOne({ email: user.email })) {
       return res.status(409).json({
         status: 409,
         message: 'User already exists'
@@ -32,7 +34,7 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
     }
 
     // Compare passwords
-    if(user.password !== user.confirmPassword) {
+    if (user.password !== user.confirmPassword) {
       return res.status(400).json({
         status: 400,
         message: 'Passwords do not match'
@@ -40,7 +42,7 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
     }
 
     // Check if the original password is long enough
-    if(user.password.length < 8) {
+    if (user.password.length < 8) {
       return res.status(400).json({
         status: 400,
         message: 'Password is too short'
@@ -48,7 +50,7 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
     }
 
     // Check if the original password is not too long
-    if(user.password.length > 128) {
+    if (user.password.length > 128) {
       return res.status(400).json({
         status: 400,
         message: 'Password is too long'
@@ -62,7 +64,7 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
     const avatar = await gravatar.url(user.email, {
       s: '200',
       r: 'pg',
-      d: 'mm',
+      d: 'mm'
     })
 
     // Construct Gravatar URL
@@ -74,14 +76,17 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
     // Create user model
     user = await model_users.create(user)
 
-    if(!user) {
+    if (!user) {
       res.status(500).json({
         status: 500,
-        message: 'Something went wrong!',
+        message: 'Something went wrong!'
       })
     }
 
-    await model_technology.updateMany({name: user.technologies}, {$push: {users: user._id}})
+    await model_technology.updateMany(
+      { name: user.technologies },
+      { $push: { users: user._id } }
+    )
 
     // Generate auth token
     const token = await user.generateAuthToken()
@@ -94,7 +99,6 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
       token,
       user: newUser
     })
-
   } catch (error) {
     console.log(error)
     res.status(500).json({
@@ -117,18 +121,20 @@ exports.createUser = async (req: Request<RegisterUserRequest>,
  * @access Public
  * @author Gabor
  */
-exports.loginUser = async (req: Request<LoginUserRequest>,
-                           res: Response<UserResponse>) => {
+exports.loginUser = async (
+  req: Request<LoginUserRequest>,
+  res: Response<UserResponse>
+) => {
   try {
     const { user } = req.body
 
     user.email = user.email.toLowerCase().trim()
 
     // Checks for existing user in DB
-    const foundUser = await model_users.findOne({email: user.email})
+    const foundUser = await model_users.findOne({ email: user.email })
 
     // If there is no user responds with invalid credentials
-    if(!foundUser) {
+    if (!foundUser) {
       return res.status(401).json({
         status: 401,
         message: 'Invalid credentials'
@@ -136,10 +142,13 @@ exports.loginUser = async (req: Request<LoginUserRequest>,
     }
 
     // Compares passwords
-    const isCorrectPassword = await bcrypt.compare(user.password, foundUser.password)
+    const isCorrectPassword = await bcrypt.compare(
+      user.password,
+      foundUser.password
+    )
 
     // If passwords don't match with the one in the DB responds with invalid credentials
-    if(!isCorrectPassword) {
+    if (!isCorrectPassword) {
       return res.status(401).json({
         status: 401,
         message: 'Invalid credentials'
@@ -155,13 +164,12 @@ exports.loginUser = async (req: Request<LoginUserRequest>,
       token,
       user: foundUser
     })
-
   } catch (error) {
-      console.log(error)
-      res.status(500).json({
-        status: 500,
-        message: error.message
-      })
+    console.log(error)
+    res.status(500).json({
+      status: 500,
+      message: error.message
+    })
   }
 }
 
@@ -221,25 +229,23 @@ exports.getUserProfile = async (req: Request, res: Response<UserResponse>) => {
     const id = req.body.decoded._id
 
     // Checks if user ID is a string
-    if(typeof id === 'string') {
+    if (typeof id === 'string') {
       // Checks if user ID is a valid mongo ID
-      if(mongoose.Types.ObjectId.isValid(id)) {
+      if (mongoose.Types.ObjectId.isValid(id)) {
         // Gets user data form DB and removes unnecessary fields
         const user = await model_users
           .findById(id)
-          .select(
-            [
-              '-tokens',
-              '-password',
-              '-resetPasswordToken',
-              '-__v',
-              '-createdAt',
-              '-updatedAt',
-              '-_id'
-            ]
-          )
+          .select([
+            '-tokens',
+            '-password',
+            '-resetPasswordToken',
+            '-__v',
+            '-createdAt',
+            '-updatedAt',
+            '-_id'
+          ])
         // If user found returns the user
-        if(user) {
+        if (user) {
           return res.status(200).json({
             status: 200,
             message: `Profile of ${user.username}`,
@@ -248,12 +254,11 @@ exports.getUserProfile = async (req: Request, res: Response<UserResponse>) => {
         }
       }
     }
-      // Returns auth error if any if checks fail
-      return res.status(403).json({
-        status: 403,
-        message: 'Not authorized'
-      })
-
+    // Returns auth error if any if checks fail
+    return res.status(403).json({
+      status: 403,
+      message: 'Not authorized'
+    })
   } catch (error) {
     console.log(error)
     res.status(500).json({
@@ -279,16 +284,16 @@ exports.updateUser = async (req: Request, res: Response<UserResponse>) => {
   try {
     // Gets user ID
     const id = req.body.decoded._id
-    let {user} = req.body
+    let { user } = req.body
 
     user.email = user.email.toLowerCase().trim()
 
-    if(user.email !== req.body.decoded.email) {
+    if (user.email !== req.body.decoded.email) {
       // Get avatar from Gravatar
       user.avatar = await gravatar.url(user.email, {
         s: '200',
         r: 'pg',
-        d: 'mm',
+        d: 'mm'
       })
 
       // Construct Gravatar URL
@@ -298,18 +303,26 @@ exports.updateUser = async (req: Request, res: Response<UserResponse>) => {
     // Verify and create social profiles
     user = verifyAndCreateSocial(user)
 
-    if(typeof id === 'string') {
+    if (typeof id === 'string') {
       // Checks if user ID is a valid mongo ID
       if (mongoose.Types.ObjectId.isValid(id)) {
         //Updates technologies users with new values
         //TODO: Make it more efficient by combining the two if possible
-        await model_technology.updateMany({users: id}, {$pull: {users: id}})
-        await model_technology.updateMany({name: user.technologies}, {$push: {users: id}})
+        await model_technology.updateMany(
+          { users: id },
+          { $pull: { users: id } }
+        )
+        await model_technology.updateMany(
+          { name: user.technologies },
+          { $push: { users: id } }
+        )
 
         // Update user and return new user details
-        const newUser = await model_users.findByIdAndUpdate(id, user, { new: true }).select('-password')
+        const newUser = await model_users
+          .findByIdAndUpdate(id, user, { new: true })
+          .select('-password')
 
-        if(!newUser) {
+        if (!newUser) {
           // Returns auth error if any if checks fail
           return res.status(401).json({
             status: 401,
@@ -354,15 +367,18 @@ exports.deleteUser = async (req: Request, res: Response<UserResponse>) => {
     // Gets user ID
     const id = req.body.decoded._id
 
-    if(typeof id === 'string') {
+    if (typeof id === 'string') {
       // Checks if user ID is a valid mongo ID
       if (mongoose.Types.ObjectId.isValid(id)) {
         // Gets user data form DB and removes unnecessary fields
         const user = await model_users.findByIdAndDelete(id)
         // If there was a user
-        if(user) {
+        if (user) {
           // Remove userID from technologies
-          await model_technology.updateMany({users: id}, {$pull: {users: id}})
+          await model_technology.updateMany(
+            { users: id },
+            { $pull: { users: id } }
+          )
           return res.status(200).json({
             status: 200,
             message: 'User is deleted'
@@ -389,23 +405,22 @@ exports.deleteUser = async (req: Request, res: Response<UserResponse>) => {
 /////////////
 
 // Creates social profiles URLs based on usernames
-const verifyAndCreateSocial = (user:
-                                 {
-                                   githubURL: string;
-                                   gitlabURL: string;
-                                   bitbucketURL: string;
-                                   linkedinURL: string
-                                 }) => {
-  if(user.githubURL !== '') {
+const verifyAndCreateSocial = (user: {
+  githubURL: string
+  gitlabURL: string
+  bitbucketURL: string
+  linkedinURL: string
+}) => {
+  if (user.githubURL !== '') {
     user.githubURL = `https://github.com/${user.githubURL}`
   }
-  if(user.gitlabURL !== '') {
+  if (user.gitlabURL !== '') {
     user.gitlabURL = `https://gitlab.com/${user.gitlabURL}`
   }
-  if(user.bitbucketURL !== '') {
+  if (user.bitbucketURL !== '') {
     user.bitbucketURL = `https://bitbucket.org/${user.bitbucketURL}/`
   }
-  if(user.linkedinURL !== '') {
+  if (user.linkedinURL !== '') {
     user.linkedinURL = `https://www.linkedin.com/in/${user.linkedinURL}/`
   }
   return user
@@ -418,33 +433,33 @@ const verifyAndCreateSocial = (user:
 interface RegisterUserRequest {
   body: {
     user: {
-      username: string,
-      email: string,
-      password: string,
-      confirmPassword: string,
-      githubURL: string,
-      gitlabURL: string,
-      bitbucketURL: string,
-      linkedinURL: string,
-      pLanguages: string[],
-      sLanguages: string[],
+      username: string
+      email: string
+      password: string
+      confirmPassword: string
+      githubURL: string
+      gitlabURL: string
+      bitbucketURL: string
+      linkedinURL: string
+      pLanguages: string[]
+      sLanguages: string[]
       bio: string
     }
   }
 }
 
 interface UserResponse {
-  status: number,
-  message?: string,
-  token?: string,
+  status: number
+  message?: string
+  token?: string
   user?: Record<string, unknown>
 }
 
 interface LoginUserRequest {
   body: {
     user: {
-      email: string,
-      password: string,
+      email: string
+      password: string
     }
   }
 }

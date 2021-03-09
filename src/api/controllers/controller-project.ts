@@ -122,7 +122,9 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
       if (filteredProjects.length > 0) {
         return res.status(200).json({
           status: 200,
-          message: `Serving page: ${page}, itemsPerPage: ${itemsPerPage}, sorting: ${sort || '+name'}.`,
+          message: `Serving page: ${page}, itemsPerPage: ${itemsPerPage}, sorting: ${
+            sort || '+name'
+          }.`,
           projects: filteredProjects
         })
       }
@@ -145,9 +147,57 @@ exports.updateProjectById = async (req: Request, res: Response) => {
   try {
     const projectId = req.params.id
     const userId = req.body.decoded._id
+    const project = {
+      name: req.body.project.name,
+      sortName: req.body.project.name.toLowerCase(),
+      description: req.body.project.description,
+      technologies: req.body.project.technologies
+    }
 
-    
-    res.send('updateUserById')
+    const validProject = await model_projects.findOne({
+      _id: projectId,
+      owner: userId
+    })
+
+    if (!validProject) {
+      return res.status(403).json({
+        status: 403,
+        message: 'You are not authorized to edit this project'
+      })
+    }
+
+    const updatedProject = await model_projects.findOneAndUpdate(
+      { _id: projectId, owner: userId },
+      {
+        name: project.name,
+        sortName: project.sortName,
+        description: project.description,
+        technologies: project.technologies
+      },
+      { new: true }
+    )
+
+      //TODO: Make it more efficient by combining the two if possible
+      await model_technology.updateMany(
+        { projects: projectId },
+        { $pull: { projects: projectId } }
+      )
+      await model_technology.updateMany(
+        { name: project.technologies },
+        { $push: { projects: projectId } }
+      )
+
+    if (!updatedProject) {
+      return res.status(400).json({
+        status: 400,
+        message: 'Something went wrong'
+      })
+    }
+    return res.status(200).json({
+      status: 200,
+      message: 'Successfully updated project',
+      project: updatedProject
+    })
   } catch (error) {
     console.log(error)
     return res.status(500).json({
