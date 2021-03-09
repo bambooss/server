@@ -11,10 +11,11 @@ const jobsSchema = new mongoose.Schema({
   },
   description: {
     type: String,
+    required: true,
   },
   technologies: {
     type: Array,
-    required: true
+    required: true,
   },
   project: {
     type: mongoose.Types.ObjectId,
