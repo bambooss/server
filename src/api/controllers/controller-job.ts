@@ -158,6 +158,68 @@ exports.getAllJobs = async (req: Request, res: Response) => {
   }
 }
 
+exports.updateJobById = async (req: Request, res: Response) => {
+  try {
+    const jobId = req.params.id
+    const userId = req.body.decoded._id
+    const job = {
+      title: req.body.job.title,
+      sortTitle: req.body.job.title.toLowerCase(),
+      description: req.body.job.description,
+      technologies: req.body.job.technologies,
+    }
+
+    const foundJob = await model_job.findOne({_id: jobId}).populate('project')
+
+    if (foundJob) {
+      console.log(foundJob.project.owner)
+      console.log(userId)
+      if(foundJob.project.owner == userId) {
+        console.log('this runs')
+        const updatedJob = await model_job.findOneAndUpdate(
+          {_id: jobId},
+          {
+            title: job.title,
+            sortTitle: job.sortTitle,
+            description: job.description,
+            technologies: job.technologies,
+          },
+          {new: true}
+        )
+        await model_technology.updateMany(
+          { jobs: jobId },
+          { $pull: { jobs: jobId } }
+        )
+        // Reassign the new technologies to the DB
+        await model_technology.updateMany(
+          { name: job.technologies },
+          { $push: { jobs: jobId } }
+        )
+
+        console.log(updatedJob)
+        if (updatedJob) {
+          return res.status(200).json({
+            status: 200,
+            message: 'Successfully updated job',
+            job: updatedJob
+          })
+        }
+      }
+    }
+
+    return res.status(400).json({
+      status: 400,
+      message: 'Something went wrong'
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
+
 exports.deleteJobById = async (req: Request, res: Response) => {
   try {
     // Get job ID from the query string
