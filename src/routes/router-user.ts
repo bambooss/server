@@ -1,6 +1,6 @@
 import express from 'express'
 
-const { createUser, loginUser, getUserProfile, updateUser, deleteUser } = require('../api/controllers/controller-user')
+const { createUser, loginUser, getUserProfile, updateUser, deleteUser, logout } = require('../api/controllers/controller-user')
 const { auth } = require('../middlewares/middleware-auth')
 const router = express.Router()
 
@@ -10,5 +10,6 @@ router.post('/login', loginUser)
 router.get('/', auth, getUserProfile)
 router.delete('/', auth, deleteUser)
 router.patch('/', auth, updateUser)
+router.get('/logout', auth, logout)
 
 module.exports = router

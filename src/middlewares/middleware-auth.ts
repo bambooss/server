@@ -47,6 +47,7 @@ exports.auth = async (req: Request, res: Response, next: NextFunction) => {
       }
       // Saves decoded values into req.body.decoded
       req.body.decoded = decoded
+      req.body.token = token
       next()
     }
   } catch (error) {

@@ -169,7 +169,7 @@ exports.getAllJobs = async (req: Request, res: Response) => {
       const count = await model_job.find({}).count()
 
       const maxPages = Math.ceil(count / parseInt(itemsPerPage, 10))
-      
+
       if(maxPages < parseInt(page, 10)){
         return res.status(400).json({
           status: 400,
