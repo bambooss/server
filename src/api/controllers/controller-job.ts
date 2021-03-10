@@ -165,6 +165,17 @@ exports.getAllJobs = async (req: Request, res: Response) => {
     if (typeof page === 'string' && typeof itemsPerPage === 'string') {
       // Logic for number of documents to be skipped
       itemsToSkip = (parseInt(page, 10) - 1) * parseInt(itemsPerPage, 10)
+      // Get the total count of the documents for setting up pages
+      const count = await model_job.find({}).count()
+
+      const maxPages = Math.ceil(count / parseInt(itemsPerPage, 10))
+      
+      if(maxPages < parseInt(page, 10)){
+        return res.status(400).json({
+          status: 400,
+          message: 'Page number is out of range'
+        })
+      }
       // The filter function itself
       const filteredJobs = await model_job
         .find({})
@@ -178,6 +189,8 @@ exports.getAllJobs = async (req: Request, res: Response) => {
           message: `Serving page: ${page}, itemsPerPage: ${itemsPerPage}, sorting: ${
             sort || '+name'
           }.`,
+          totalJobs: count,
+          maxPages: Math.ceil(count / parseInt(itemsPerPage, 10)),
           jobs: filteredJobs
         })
       }

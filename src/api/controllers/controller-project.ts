@@ -166,6 +166,17 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
     if (typeof page === 'string' && typeof itemsPerPage === 'string') {
       // Logic for number of documents to be skipped
       itemsToSkip = (parseInt(page, 10) - 1) * parseInt(itemsPerPage, 10)
+      // Get the total count of the documents for setting up pages
+      const count = await model_projects.count()
+
+      const maxPages = Math.ceil(count / parseInt(itemsPerPage, 10))
+
+      if(maxPages < parseInt(page, 10)){
+        return res.status(400).json({
+          status: 400,
+          message: 'Page number is out of range'
+        })
+      }
       //The filter function itself
       const filteredProjects = await model_projects
         .find({})
@@ -179,6 +190,8 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
           message: `Serving page: ${page}, itemsPerPage: ${itemsPerPage}, sorting: ${
             sort || '+name'
           }.`,
+          totalProjects: count,
+          maxPages: Math.ceil(count / parseInt(itemsPerPage, 10)),
           projects: filteredProjects
         })
       }
