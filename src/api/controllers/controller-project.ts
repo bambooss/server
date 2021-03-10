@@ -85,7 +85,7 @@ exports.createProject = async (req: Request, res: Response) => {
  * @param {string} req.params.id - project ID
  * @param {object} res - Response object from express router
  * @method GET
- * @route /project:id
+ * @route /project/:id
  * @access Private
  * @author Gabor
  */

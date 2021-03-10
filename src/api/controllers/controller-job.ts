@@ -6,6 +6,19 @@ const model_projects = require('../models/model-project')
 const model_technology = require('../models/model-technology')
 const model_job = require('../models/model-job')
 
+/**
+ * Controller to create a new job,
+ * It takes in the new user ID and the job details including the project ID
+ * and will return the job and a 201 created message.
+ * @param {Request} req - Request object from express router
+ * @param {object} req.body.decoded._id - user's data object
+ * @param {object} req.body.job - Job details
+ * @param {object} res - Response object from express router
+ * @method POST
+ * @route /job
+ * @access Private
+ * @author Gabor
+ */
 exports.createJob = async (req: Request, res: Response) => {
   try {
     // Prepare job details
@@ -62,6 +75,18 @@ exports.createJob = async (req: Request, res: Response) => {
   }
 }
 
+/**
+ * Controller to get a job by ID,
+ * it needs the job ID to look for the corresponding job
+ * and will return the project and a 200 success message.
+ * @param {Request} req - Request object from express router
+ * @param {string} req.params.id - job ID
+ * @param {object} res - Response object from express router
+ * @method GET
+ * @route /job/:id
+ * @access Private
+ * @author Gabor
+ */
 exports.getJobById = async (req: Request, res: Response) => {
   try {
     // Get job Id
@@ -91,6 +116,20 @@ exports.getJobById = async (req: Request, res: Response) => {
   }
 }
 
+/**
+ * Controller to get job with sorting and pagination,
+ * it receives the page number, items per page and sort type
+ * and will return the jobs corresponding to the query and a 200 success message.
+ * @param {Request} req - Request object from express router
+ * @param {string} req.query.page - page number
+ * @param {string} req.query.itemsPerPage - items to show per page
+ * @param {string} req.query.sort - way to sort items
+ * @param {object} res - Response object from express router
+ * @method GET
+ * @route /job
+ * @access Private
+ * @author Gabor
+ */
 exports.getAllJobs = async (req: Request, res: Response) => {
   try {
     // Page number
@@ -158,10 +197,32 @@ exports.getAllJobs = async (req: Request, res: Response) => {
   }
 }
 
+/**
+ * Controller to update a job corresponding to the ID,
+ * it also takes the user ID decoded from the token,
+ * and check if the user is the owner of the project
+ * updates the job and technologies array with new values
+ * and will return the job and a 200 success message.
+ * @param {Request} req - Request object from express router
+ * @param {string} req.params.id - job ID
+ * @param {string} req.body.decoded._id - user ID
+ * @param {object} req.body.job - job details to be updated
+ * @param {string} req.body.job.title - job title
+ * @param {string} req.body.job.description - job description
+ * @param {array} req.body.job.technologies - technologies array
+ * @param {object} res - Response object from express router
+ * @method PATCH
+ * @route /job/:id
+ * @access Private
+ * @author Gabor
+ */
 exports.updateJobById = async (req: Request, res: Response) => {
   try {
+    // Get job ID
     const jobId = req.params.id
+    // Get user ID from token
     const userId = req.body.decoded._id
+    // Prepare job for update
     const job = {
       title: req.body.job.title,
       sortTitle: req.body.job.title.toLowerCase(),
@@ -169,13 +230,14 @@ exports.updateJobById = async (req: Request, res: Response) => {
       technologies: req.body.job.technologies,
     }
 
+    // Get job by ID with project populated
     const foundJob = await model_job.findOne({_id: jobId}).populate('project')
 
+    // If job found
     if (foundJob) {
-      console.log(foundJob.project.owner)
-      console.log(userId)
+      // If the user is the owner who is making the request
       if(foundJob.project.owner == userId) {
-        console.log('this runs')
+        // Update job
         const updatedJob = await model_job.findOneAndUpdate(
           {_id: jobId},
           {
@@ -186,6 +248,7 @@ exports.updateJobById = async (req: Request, res: Response) => {
           },
           {new: true}
         )
+        // Delete technologies
         await model_technology.updateMany(
           { jobs: jobId },
           { $pull: { jobs: jobId } }
@@ -195,8 +258,7 @@ exports.updateJobById = async (req: Request, res: Response) => {
           { name: job.technologies },
           { $push: { jobs: jobId } }
         )
-
-        console.log(updatedJob)
+        // If update was successful
         if (updatedJob) {
           return res.status(200).json({
             status: 200,
@@ -207,6 +269,7 @@ exports.updateJobById = async (req: Request, res: Response) => {
       }
     }
 
+    // If something went wrong
     return res.status(400).json({
       status: 400,
       message: 'Something went wrong'
@@ -220,6 +283,20 @@ exports.updateJobById = async (req: Request, res: Response) => {
   }
 }
 
+/**
+ * Controller to delete a job by ID,
+ * it needs the job ID to look for the corresponding job,
+ * the ID decoded from the token to cross check it with the project owner
+ * and will return  a 200 deleted message.
+ * @param {Request} req - Request object from express router
+ * @param {string} req.params.id - job ID
+ * @param {string} req.body.decoded._id - user ID from the token
+ * @param {object} res - Response object from express router
+ * @method DELETE
+ * @route /job/:id
+ * @access Private
+ * @author Gabor
+ */
 exports.deleteJobById = async (req: Request, res: Response) => {
   try {
     // Get job ID from the query string
