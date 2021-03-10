@@ -416,6 +416,31 @@ exports.logout = async (req: Request, res: Response) => {
   }
 }
 
+exports.logoutAll = async (req: Request, res: Response) => {
+  try {
+    const userId = req.body.decoded._id
+    const isLoggedOut = await model_users.findByIdAndUpdate(userId, {tokens: []})
+
+    if(isLoggedOut) {
+      return res.status(200).json({
+        status: 200,
+        message: 'User is logged out from all devices'
+      })
+    }
+
+    return res.status(400).json({
+      status: 400,
+      message: 'Something went wrong'
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
+
 /////////////
 // HELPERS //
 /////////////
