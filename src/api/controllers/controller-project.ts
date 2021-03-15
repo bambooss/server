@@ -20,6 +20,7 @@ const model_technology = require('../models/model-technology')
  */
 exports.createProject = async (req: Request, res: Response) => {
   try {
+    console.log(req.body)
     // Gets user ID
     const id = req.body.decoded._id
     // Gets project details from front-end
@@ -171,7 +172,7 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
 
       const maxPages = Math.ceil(count / parseInt(itemsPerPage, 10))
 
-      if(maxPages < parseInt(page, 10)){
+      if (maxPages < parseInt(page, 10)) {
         return res.status(400).json({
           status: 400,
           message: 'Page number is out of range'
@@ -202,6 +203,28 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
         message: 'Invalid type of input'
       })
     }
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
+
+exports.getProjectsByUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.body.decoded._id
+    const projectsByUser = await model_projects
+      .find({ owner: userId })
+      .select(['-createdAt', '-updatedAt', '-__v', '-sortName'])
+      .sort({ sortName: 1 })
+
+    return res.status(200).json({
+      status: 200,
+      message: 'Get projects by user ID were successful',
+      projects: projectsByUser
+    })
   } catch (error) {
     console.log(error)
     return res.status(500).json({
@@ -268,18 +291,18 @@ exports.updateProjectById = async (req: Request, res: Response) => {
       { new: true }
     )
 
-      //TODO: Make it more efficient by combining the two if possible
+    //TODO: Make it more efficient by combining the two if possible
 
-      // Remove the the technologies from the DB
-      await model_technology.updateMany(
-        { projects: projectId },
-        { $pull: { projects: projectId } }
-      )
-      // Reassign the new technologies to the DB
-      await model_technology.updateMany(
-        { name: project.technologies },
-        { $push: { projects: projectId } }
-      )
+    // Remove the the technologies from the DB
+    await model_technology.updateMany(
+      { projects: projectId },
+      { $pull: { projects: projectId } }
+    )
+    // Reassign the new technologies to the DB
+    await model_technology.updateMany(
+      { name: project.technologies },
+      { $push: { projects: projectId } }
+    )
     // If something went wrong with the update
     if (!updatedProject) {
       return res.status(400).json({
@@ -323,7 +346,10 @@ exports.deleteProjectById = async (req: Request, res: Response) => {
     // Get the user ID from the token
     const userId = req.body.decoded._id
 
-    const deletedProject = await model_projects.findOneAndRemove({_id: projectId, owner: userId})
+    const deletedProject = await model_projects.findOneAndRemove({
+      _id: projectId,
+      owner: userId
+    })
 
     // If user ID and project Id are correct
     if (deletedProject) {
