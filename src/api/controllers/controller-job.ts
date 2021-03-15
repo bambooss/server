@@ -106,7 +106,29 @@ exports.getJobById = async (req: Request, res: Response) => {
       message: 'Job found',
       job
     })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
 
+exports.getJobsByProject = async (req: Request, res: Response) => {
+  try {
+    const projectId = req.params.id
+    console.log(projectId)
+    const jobsByProject = await model_job
+      .find({ project: projectId })
+      .select(['-createdAt', '-updatedAt', '-__v', '-sortName'])
+      .sort({ sortName: 1 })
+
+    return res.status(200).json({
+      status: 200,
+      message: 'Get jobs by project ID were successful',
+      jobs: jobsByProject
+    })
   } catch (error) {
     console.log(error)
     return res.status(500).json({
@@ -170,7 +192,7 @@ exports.getAllJobs = async (req: Request, res: Response) => {
 
       const maxPages = Math.ceil(count / parseInt(itemsPerPage, 10))
 
-      if(maxPages < parseInt(page, 10)){
+      if (maxPages < parseInt(page, 10)) {
         return res.status(400).json({
           status: 400,
           message: 'Page number is out of range'
@@ -240,26 +262,26 @@ exports.updateJobById = async (req: Request, res: Response) => {
       title: req.body.job.title,
       sortTitle: req.body.job.title.toLowerCase(),
       description: req.body.job.description,
-      technologies: req.body.job.technologies,
+      technologies: req.body.job.technologies
     }
 
     // Get job by ID with project populated
-    const foundJob = await model_job.findOne({_id: jobId}).populate('project')
+    const foundJob = await model_job.findOne({ _id: jobId }).populate('project')
 
     // If job found
     if (foundJob) {
       // If the user is the owner who is making the request
-      if(foundJob.project.owner == userId) {
+      if (foundJob.project.owner == userId) {
         // Update job
         const updatedJob = await model_job.findOneAndUpdate(
-          {_id: jobId},
+          { _id: jobId },
           {
             title: job.title,
             sortTitle: job.sortTitle,
             description: job.description,
-            technologies: job.technologies,
+            technologies: job.technologies
           },
-          {new: true}
+          { new: true }
         )
         // Delete technologies
         await model_technology.updateMany(
@@ -318,26 +340,26 @@ exports.deleteJobById = async (req: Request, res: Response) => {
     const userId = req.body.decoded._id
 
     // Find job by id and populate project
-    const job = await model_job.findOne({_id: jobId}).populate('project')
+    const job = await model_job.findOne({ _id: jobId }).populate('project')
 
     // If a job found
-    if(job) {
+    if (job) {
       // Verify if the user is the project owner
-      if(job.project.owner == userId) {
+      if (job.project.owner == userId) {
         // Delete job from DB
-        const deletedJob = await model_job.findOneAndRemove({_id: jobId})
+        const deletedJob = await model_job.findOneAndRemove({ _id: jobId })
         // If job deleted
         if (deletedJob) {
           // Remove job ID from technologies
           await model_technology.updateMany(
-              { jobs: jobId },
-              { $pull: { jobs: jobId } }
-            )
+            { jobs: jobId },
+            { $pull: { jobs: jobId } }
+          )
 
-            return res.status(200).json({
-              status: 200,
-              message: 'Job successfully deleted'
-            })
+          return res.status(200).json({
+            status: 200,
+            message: 'Job successfully deleted'
+          })
         }
       }
     }
