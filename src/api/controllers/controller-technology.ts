@@ -17,26 +17,26 @@ const sortedTechArray = require('../../data/technologies-1')
 exports.generateTechnologiesFromArray = async (req: Request, res: Response) => {
   try {
     // Email from verified token
-    const {email} = req.body.decoded
+    const { email } = req.body.decoded
 
     // Checks if email is an admin email
-    if(email === 'csecsi85@gmail.com' || email === 'mazbsorz@gmail.com') {
+    if (email === 'csecsi85@gmail.com' || email === 'mazbsorz@gmail.com') {
       // Goes through the array of technology names
       await sortedTechArray.map(async (tech: string) => {
         //makes an object out of them
         const techObj = {
           name: tech,
-          status: 1,
+          status: 1
         }
 
         // Checks if the technology name exists
-        const isExisting = await model_technology.findOne({name: tech})
+        const isExisting = await model_technology.findOne({ name: tech })
         // If technology doesn't exist
-        if(!isExisting) {
+        if (!isExisting) {
           // Saves technology
           const savedTechnology = await model_technology.create(techObj)
           // If something goes wrong sends an error message back to the client
-          if(!savedTechnology) {
+          if (!savedTechnology) {
             return res.status(500).json({
               status: 500,
               message: 'Something went wrong with tech creation'
@@ -51,11 +51,11 @@ exports.generateTechnologiesFromArray = async (req: Request, res: Response) => {
         message: 'New technologies were successfully created'
       })
 
-    // If user is not admin sends a not found response
+      // If user is not admin sends a not found response
     } else {
       return res.status(404).json({
         status: 404,
-        message: 'page doesn\'t exist',
+        message: "page doesn't exist"
       })
     }
   } catch (error) {
@@ -81,13 +81,21 @@ exports.listTechnologies = async (req: Request, res: Response) => {
   try {
     // Lists all technologies in the DB and takes the ID and the name
     const technologies = await model_technology.find({}).select(['_id', 'name'])
-
+    let techArray: Object[] = []
+    technologies.map((t: { name: String }) => {
+      const tempObj = {
+        name: t.name,
+        label: t.name.toLowerCase()
+      }
+      techArray.push(tempObj)
+    })
     //If there are technologies found
-    if(technologies.length > 0) {
+    if (technologies.length > 0) {
+      // @ts-ignore
       return res.status(200).json({
         status: 200,
         message: 'Successfully listed technologies',
-        technologies
+        technologies: techArray
       })
     }
 
@@ -124,33 +132,36 @@ exports.listTechnologies = async (req: Request, res: Response) => {
 exports.updateTechnologyName = async (req: Request, res: Response) => {
   try {
     // Email from verified token
-    const {email} = req.body.decoded
+    const { email } = req.body.decoded
     // Old and new technology names
     const technologyName = req.body.name
     const newTechnologyName = req.body.newName
 
     // Checks if email is an admin email
-    if(email === 'csecsi85@gmail.com' || email === 'mazbsorz@gmail.com') {
+    if (email === 'csecsi85@gmail.com' || email === 'mazbsorz@gmail.com') {
       // searches for the old technology name and replaces the name with the new one
-      const updatedTechnologyName = await model_technology.findOneAndUpdate({name: technologyName}, {name: newTechnologyName})
+      const updatedTechnologyName = await model_technology.findOneAndUpdate(
+        { name: technologyName },
+        { name: newTechnologyName }
+      )
       // If success
-      if(updatedTechnologyName) {
+      if (updatedTechnologyName) {
         return res.status(200).json({
           status: 200,
           message: `${technologyName} was successfully updated to ${newTechnologyName}`
         })
-      // If no technology were found with the name
+        // If no technology were found with the name
       } else {
         return res.status(400).json({
           status: 400,
           message: `${technologyName} doesn't exist`
         })
       }
-    // If email is not admin email
+      // If email is not admin email
     } else {
       return res.status(404).json({
         status: 404,
-        message: 'page doesn\'t exist',
+        message: "page doesn't exist"
       })
     }
   } catch (error) {
@@ -180,17 +191,19 @@ exports.updateTechnologyName = async (req: Request, res: Response) => {
 exports.deleteOneTechnology = async (req: Request, res: Response) => {
   try {
     // Email from verified token
-    const {email} = req.body.decoded
+    const { email } = req.body.decoded
     // Technology name
     const technology = req.body.name
 
     // Checks if email is an admin email
-    if(email === 'csecsi85@gmail.com' || email === 'mazbsorz@gmail.com') {
+    if (email === 'csecsi85@gmail.com' || email === 'mazbsorz@gmail.com') {
       // Looks for the technology with the name specified and deletes it
-      const removedTechnology = await model_technology.findOneAndRemove({name: technology})
+      const removedTechnology = await model_technology.findOneAndRemove({
+        name: technology
+      })
 
       // If technology found
-      if(removedTechnology) {
+      if (removedTechnology) {
         return res.status(200).json({
           status: 200,
           message: `${req.body.name} was successfully deleted`
@@ -201,11 +214,11 @@ exports.deleteOneTechnology = async (req: Request, res: Response) => {
         status: 400,
         message: 'Something went wrong'
       })
-    // If email is not admin email
+      // If email is not admin email
     } else {
       return res.status(404).json({
         status: 404,
-        message: 'page doesn\'t exist',
+        message: "page doesn't exist"
       })
     }
   } catch (error) {
@@ -232,21 +245,21 @@ exports.deleteOneTechnology = async (req: Request, res: Response) => {
 exports.deleteAllTechnologies = async (req: Request, res: Response) => {
   try {
     // Email from verified token
-    const {email} = req.body.decoded
+    const { email } = req.body.decoded
 
     // Checks if email is an admin email
-    if(email === 'csecsi85@gmail.com' || email === 'mazbsorz@gmail.com') {
+    if (email === 'csecsi85@gmail.com' || email === 'mazbsorz@gmail.com') {
       await model_technology.remove({})
 
       return res.status(200).json({
         status: 200,
         message: 'All technologies were successfully deleted'
       })
-    // If email is not admin email
+      // If email is not admin email
     } else {
       return res.status(404).json({
         status: 404,
-        message: 'page doesn\'t exist',
+        message: "page doesn't exist"
       })
     }
   } catch (error) {
