@@ -80,17 +80,35 @@ exports.generateTechnologiesFromArray = async (req: Request, res: Response) => {
 exports.listTechnologies = async (req: Request, res: Response) => {
   try {
     // Lists all technologies in the DB and takes the ID and the name
-    const technologies = await model_technology
-      .find({})
-      .select(['_id', 'name', 'projects'])
-
-    //If there are technologies found
-    if (technologies.length > 0) {
-      return res.status(200).json({
-        status: 200,
-        message: 'Successfully listed technologies',
-        technologies
+    const technologies = await model_technology.find({}).select(['_id', 'name'])
+    if (process.env.NODE_ENV !== 'vue') {
+      let techArray: Object[] = []
+      technologies.map((t: { name: String }) => {
+        const tempObj = {
+          value: t.name,
+          label: t.name.toLowerCase()
+        }
+        techArray.push(tempObj)
       })
+      //If there are technologies found
+      if (technologies.length > 0) {
+        // @ts-ignore
+        return res.status(200).json({
+          status: 200,
+          message: 'Successfully listed technologies',
+          technologies: techArray
+        })
+      }
+    } else {
+      //If there are technologies found
+      if (technologies.length > 0) {
+        // @ts-ignore
+        return res.status(200).json({
+          status: 200,
+          message: 'Successfully listed technologies',
+          technologies
+        })
+      }
     }
 
     // If there were no technologies found
