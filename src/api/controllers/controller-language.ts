@@ -30,7 +30,7 @@ exports.generateLanguagesFromArray = async (req: Request, res: Response) => {
       // Success message
       return res.status(201).json({
         status: 201,
-        message: 'New technologies were successfully created'
+        message: 'New languages were successfully created'
       })
 
       // If user is not admin sends a not found response
@@ -40,6 +40,32 @@ exports.generateLanguagesFromArray = async (req: Request, res: Response) => {
         message: "page doesn't exist"
       })
     }
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
+
+exports.listLanguages = async (req: Request, res: Response) => {
+  try {
+    // Lists all languages in the DB and selects name and country code
+    const languages = await model_language.find({}).select(['name', 'code'])
+    //If there are languages found
+    if (languages.length > 0) {
+      return res.status(200).json({
+        status: 200,
+        message: 'Successfully listed languages',
+        languages
+      })
+    }
+    // If there were no languages found
+    return res.status(400).json({
+      status: 400,
+      message: 'Something went wrong'
+    })
   } catch (error) {
     console.log(error)
     return res.status(500).json({
