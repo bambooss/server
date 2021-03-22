@@ -134,6 +134,21 @@ exports.getProjectById = async (req: Request, res: Response) => {
  */
 exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
   try {
+    let tech
+    console.log(req.query)
+    if (typeof req.query.technologies === 'string') {
+      tech = req.query.technologies.split(',')
+    } else {
+      const technologies = await model_technology
+        .find({})
+        .select(['name', '-_id'])
+      tech = await technologies.map((technology: { name: String }) => {
+        return technology.name
+      })
+    }
+    // const tech = req.query.technologies ? req.query.technologies.split(','): techArray
+    const match = req.query.match || 'any'
+    let matchObj
     // Page number
     const page = req.query.page || '1'
     // How many items should be per page
@@ -144,6 +159,14 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
     let sortObj
     // necessary for mongo skip method
     let itemsToSkip
+
+    let filteredProjects
+
+    let count
+
+    let maxPages
+
+    let jobsAvailable = req.query.job ? { jobsAvailable: req.query.job } : {}
 
     // Depending of the sort variable value, saves the sort object
     switch (sort) {
@@ -163,14 +186,36 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
         sortObj = { sortName: 1 }
     }
 
+    switch (match) {
+      case 'any':
+        matchObj = { $in: tech }
+        break
+      case 'all':
+        matchObj = { $all: tech }
+        break
+      default:
+        matchObj = { $in: tech }
+    }
+
     // Req variables have to be strings
     if (typeof page === 'string' && typeof itemsPerPage === 'string') {
       // Logic for number of documents to be skipped
       itemsToSkip = (parseInt(page, 10) - 1) * parseInt(itemsPerPage, 10)
       // Get the total count of the documents for setting up pages
-      const count = await model_projects.count()
+      tech.pop()
+      count = await model_projects.countDocuments({
+        technologies: matchObj,
+        ...jobsAvailable
+      })
+      console.log('count: ', count)
+      if (count === 0) {
+        return res.status(200).json({
+          status: 200,
+          message: 'No documents found'
+        })
+      }
 
-      const maxPages = Math.ceil(count / parseInt(itemsPerPage, 10))
+      maxPages = Math.ceil(count / parseInt(itemsPerPage, 10))
 
       if (maxPages < parseInt(page, 10)) {
         return res.status(400).json({
@@ -179,11 +224,15 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
         })
       }
       //The filter function itself
-      const filteredProjects = await model_projects
-        .find({})
+      filteredProjects = await model_projects
+        .find({
+          technologies: matchObj,
+          ...jobsAvailable
+        })
         .skip(itemsToSkip)
         .limit(parseInt(itemsPerPage, 10))
         .sort(sortObj)
+
       // If there are projects matching the filter
       if (filteredProjects.length > 0) {
         return res.status(200).json({
@@ -264,7 +313,8 @@ exports.updateProjectById = async (req: Request, res: Response) => {
       name: req.body.project.name,
       sortName: req.body.project.name.toLowerCase(),
       description: req.body.project.description,
-      technologies: req.body.project.technologies
+      technologies: req.body.project.technologies,
+      projectURL: req.body.project.projectURL
     }
     // Get the project that matches the project ID and the owner is who sent the request
     const validProject = await model_projects.findOne({
@@ -286,7 +336,8 @@ exports.updateProjectById = async (req: Request, res: Response) => {
         name: project.name,
         sortName: project.sortName,
         description: project.description,
-        technologies: project.technologies
+        technologies: project.technologies,
+        projectURL: project.projectURL
       },
       { new: true }
     )

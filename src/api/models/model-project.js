@@ -32,6 +32,10 @@ const projectSchema = new mongoose.Schema(
     projectURL: {
       type: String,
       default: ''
+    },
+    jobsAvailable: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }
