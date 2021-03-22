@@ -2,6 +2,18 @@ import { Request, Response } from 'express'
 const model_language = require('../models/model-language')
 const { languages } = require('../../data/languages')
 
+/**
+ * Controller to create new languages from an array of objects,
+ * it restricts usage to admin users
+ * and will return a 201 created message.
+ * @param {Request} req - Request object from express router
+ * @param {object} req.body.decoded.email - user's email
+ * @param {object} res - Response object from express router
+ * @method POST
+ * @route /language/generate
+ * @access Private
+ * @author Gabor
+ */
 exports.generateLanguagesFromArray = async (req: Request, res: Response) => {
   try {
     // Email from verified token
@@ -49,6 +61,16 @@ exports.generateLanguagesFromArray = async (req: Request, res: Response) => {
   }
 }
 
+/**
+ * Controller to list all languages saved in the DB,
+ * and will return an array of language objects and a 200 success message.
+ * @param {Request} req - Request object from express router
+ * @param {object} res - Response object from express router
+ * @method GET
+ * @route /language
+ * @access Private
+ * @author Gabor
+ */
 exports.listLanguages = async (req: Request, res: Response) => {
   try {
     // Lists all languages in the DB and selects name and country code
