@@ -85,8 +85,8 @@ exports.listTechnologies = async (req: Request, res: Response) => {
       let techArray: Object[] = []
       technologies.map((t: { name: String }) => {
         const tempObj = {
-          value: t.name,
-          label: t.name.toLowerCase()
+          label: t.name,
+          value: t.name.toLowerCase()
         }
         techArray.push(tempObj)
       })

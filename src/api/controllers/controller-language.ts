@@ -74,13 +74,21 @@ exports.generateLanguagesFromArray = async (req: Request, res: Response) => {
 exports.listLanguages = async (req: Request, res: Response) => {
   try {
     // Lists all languages in the DB and selects name and country code
-    const languages = await model_language.find({}).select(['name', 'code'])
+    const languages = await model_language.find({}).select(['name', '-_id'])
     //If there are languages found
     if (languages.length > 0) {
+      let langArray: Object[] = []
+      languages.map((l: { name: String }) => {
+        const tempObj = {
+          label: l.name,
+          value: l.name.toLowerCase()
+        }
+        langArray.push(tempObj)
+      })
       return res.status(200).json({
         status: 200,
         message: 'Successfully listed languages',
-        languages
+        languages: langArray
       })
     }
     // If there were no languages found
