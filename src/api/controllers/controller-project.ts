@@ -266,7 +266,7 @@ exports.getProjectsByUser = async (req: Request, res: Response) => {
     const userId = req.body.decoded._id
     const projectsByUser = await model_projects
       .find({ owner: userId })
-      .select(['-createdAt', '-updatedAt', '-__v', '-sortName'])
+      .select(['-createdAt', '-__v', '-sortName'])
       .sort({ sortName: 1 })
 
     return res.status(200).json({
