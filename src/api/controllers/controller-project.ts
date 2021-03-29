@@ -154,7 +154,7 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
     // How many items should be per page
     const itemsPerPage = req.query.itemsPerPage || '10000'
     // Type of sorting
-    const sort = req.query.sort || '+name'
+    const sort = req.query.sort || '-date'
     // Object to be sent to sort
     let sortObj
     // necessary for mongo skip method
