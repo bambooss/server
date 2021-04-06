@@ -1,10 +1,11 @@
 const express = require('express')
 const connectDB = require('./config/db')
 const cors = require('cors')
+const config = require('config')
 
 const indexRoute = require('./routes/router-index')
 
-const httpPort = process.env.PORT || 8080
+const httpPort = config.get('port') || 8080
 
 connectDB().then()
 

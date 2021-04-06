@@ -44,7 +44,15 @@ exports.createJob = async (req: Request, res: Response) => {
       })
     }
 
-    // Creat job
+    const isExistingJob = await model_job.find({title: jobDetails.title})
+
+    if(isExistingJob.length > 0) {
+      return res.status(400).json({
+        status: 400,
+        message: 'Job title must be unique'
+      })
+    }
+    // Create job
     const createdJob = await model_job.create(jobDetails)
 
     //If there was a problem
@@ -195,6 +203,13 @@ exports.getAllJobs = async (req: Request, res: Response) => {
       itemsToSkip = (parseInt(page, 10) - 1) * parseInt(itemsPerPage, 10)
       // Get the total count of the documents for setting up pages
       const count = await model_job.find({}).count()
+
+      if (count === 0) {
+        return res.status(200).json({
+          status: 200,
+          message: 'No documents found'
+        })
+      }
 
       const maxPages = Math.ceil(count / parseInt(itemsPerPage, 10))
 
