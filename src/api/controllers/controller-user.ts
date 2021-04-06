@@ -470,6 +470,13 @@ const verifyAndCreateSocial = (user:
 
 // Takes the user object and shapes it to a slimmed down version
 const createUserResponse = (user: userResponse) => {
+  const technologiesObjArr = user.technologies.map((tech) => {
+    return {
+      value: tech.toLocaleLowerCase(),
+      label: tech
+    }
+  })
+
   return {
     _id: user._id,
     username: user.username,
@@ -480,7 +487,7 @@ const createUserResponse = (user: userResponse) => {
     gitlabURL: user.gitlabURL,
     bitbucketURL: user.bitbucketURL,
     linkedinURL: user.linkedinURL,
-    technologies: user.technologies,
+    technologies: technologiesObjArr,
     languages: user.languages,
   }
 }
