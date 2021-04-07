@@ -274,27 +274,15 @@ exports.updateUser = async (req: Request, res: Response<UserResponse>) => {
   try {
     // Gets user ID
     const id = req.body.decoded._id
-    let {user} = req.body
 
-    user.email = user.email.toLowerCase().trim()
-
-    if(user.email !== req.body.decoded.email) {
-
-      if (await model_users.findOne({email: user.email})) {
-        return res.status(409).json({
-          status: 409,
-          message: 'Email is already in use'
-        })
-      }
-      // Get avatar from Gravatar
-      user.avatar = await gravatar.url(user.email, {
-        s: '200',
-        r: 'pg',
-        d: 'mm',
-      })
-
-      // Construct Gravatar URL
-      user.avatar = `https:${user.avatar}`
+    let user: UpdateUserStructure = {
+      bio: req.body.user.bio,
+      githubURL: req.body.user.githubURL,
+      gitlabURL: req.body.user.gitlabURL,
+      bitbucketURL: req.body.user.bitbucketURL,
+      linkedinURL: req.body.user.linkedinURL,
+      technologies: req.body.user.technologies,
+      languages: req.body.user.languages
     }
 
     // Verify and create social profiles
@@ -446,13 +434,7 @@ exports.logoutAll = async (req: Request, res: Response) => {
 /////////////
 
 // Creates social profiles URLs based on usernames
-const verifyAndCreateSocial = (user:
-                                 {
-                                   githubURL: string;
-                                   gitlabURL: string;
-                                   bitbucketURL: string;
-                                   linkedinURL: string
-                                 }) => {
+const verifyAndCreateSocial = (user: UpdateUserStructure) => {
   if(user.githubURL !== '') {
     user.githubURL = `https://github.com/${user.githubURL}`
   }
@@ -549,4 +531,14 @@ interface userResponse {
   _id: mongoose.Types.ObjectId,
   username: string,
   email: string,
+}
+
+interface UpdateUserStructure {
+  bio: string,
+  githubURL: string,
+  gitlabURL: string,
+  bitbucketURL: string,
+  linkedinURL: string,
+  technologies: string[],
+  languages: string[]
 }
