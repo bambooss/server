@@ -44,14 +44,6 @@ exports.createJob = async (req: Request, res: Response) => {
       })
     }
 
-    const isExistingJob = await model_job.find({title: jobDetails.title})
-
-    if(isExistingJob.length > 0) {
-      return res.status(400).json({
-        status: 400,
-        message: 'Job title must be unique'
-      })
-    }
     // Create job
     const createdJob = await model_job.create(jobDetails)
 
