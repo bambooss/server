@@ -477,6 +477,13 @@ const createUserResponse = (user: userResponse) => {
     }
   })
 
+  const languagesObjArr = user.languages.map((lang) => {
+    return {
+      value: lang.toLocaleLowerCase(),
+      label: lang
+    }
+  })
+
   return {
     _id: user._id,
     username: user.username,
@@ -488,7 +495,7 @@ const createUserResponse = (user: userResponse) => {
     bitbucketURL: user.bitbucketURL,
     linkedinURL: user.linkedinURL,
     technologies: technologiesObjArr,
-    languages: user.languages,
+    languages: languagesObjArr,
   }
 }
 
