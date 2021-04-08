@@ -20,6 +20,8 @@ const model_job = require('../models/model-job')
  * @author Gabor
  */
 exports.createJob = async (req: Request, res: Response) => {
+
+  console.log(req.body)
   try {
     // Prepare job details
     const jobDetails = {
@@ -27,7 +29,8 @@ exports.createJob = async (req: Request, res: Response) => {
       sortTitle: req.body.job.title.toLowerCase(),
       description: req.body.job.description,
       technologies: req.body.job.technologies,
-      project: req.body.job.projectId
+      project: req.body.job.projectId,
+      positions: req.body.job.positions,
     }
 
     // Check if user is the actual owner of the project
