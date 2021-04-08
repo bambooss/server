@@ -279,53 +279,58 @@ exports.updateJobById = async (req: Request, res: Response) => {
       sortTitle: req.body.job.title.toLowerCase(),
       description: req.body.job.description,
       technologies: req.body.job.technologies,
-      project: req.body.job.projectId
+      project: req.body.job.projectId,
+      positions: req.body.job.positions,
     }
 
-    const foundProject = await model_projects.findOne({
-      _id: job.project,
-      owner: userId
-    })
+    if(job.positions > 0) {
 
-    if (foundProject) {
-      // Get job by ID with project populated
-      const foundJob = await model_job
-        .findOne({ _id: jobId })
-        .populate('project')
+      const foundProject = await model_projects.findOne({
+        _id: job.project,
+        owner: userId
+      })
 
-      // If job found
-      if (foundJob) {
-        // If the user is the owner who is making the request
-        if (foundJob.project.owner == userId) {
-          // Update job
-          const updatedJob = await model_job.findOneAndUpdate(
-            { _id: jobId },
-            {
-              title: job.title,
-              sortTitle: job.sortTitle,
-              description: job.description,
-              technologies: job.technologies,
-              project: job.project
-            },
-            { new: true }
-          )
-          // Delete technologies
-          await model_technology.updateMany(
-            { jobs: jobId },
-            { $pull: { jobs: jobId } }
-          )
-          // Reassign the new technologies to the DB
-          await model_technology.updateMany(
-            { name: job.technologies },
-            { $push: { jobs: jobId } }
-          )
-          // If update was successful
-          if (updatedJob) {
-            return res.status(200).json({
-              status: 200,
-              message: 'Successfully updated job',
-              job: updatedJob
-            })
+      if (foundProject) {
+        // Get job by ID with project populated
+        const foundJob = await model_job
+            .findOne({_id: jobId})
+            .populate('project')
+
+        // If job found
+        if (foundJob) {
+          // If the user is the owner who is making the request
+          if (foundJob.project.owner == userId) {
+            // Update job
+            const updatedJob = await model_job.findByIdAndUpdate(
+                jobId,
+                {
+                  title: job.title,
+                  sortTitle: job.sortTitle,
+                  description: job.description,
+                  technologies: job.technologies,
+                  project: job.project,
+                  positions: job.positions
+                },
+                {new: true}
+            )
+            // Delete technologies
+            await model_technology.updateMany(
+                {jobs: jobId},
+                {$pull: {jobs: jobId}}
+            )
+            // Reassign the new technologies to the DB
+            await model_technology.updateMany(
+                {name: job.technologies},
+                {$push: {jobs: jobId}}
+            )
+            // If update was successful
+            if (updatedJob) {
+              return res.status(200).json({
+                status: 200,
+                message: 'Successfully updated job',
+                job: updatedJob
+              })
+            }
           }
         }
       }
