@@ -130,7 +130,7 @@ exports.getJobsByProject = async (req: Request, res: Response) => {
     const projectId = req.params.id
     const jobsByProject = await model_job
       .find({ project: projectId })
-      .select(['-createdAt', '-updatedAt', '-__v', '-sortName'])
+      .select(['-__v', '-sortName'])
       .sort({ sortName: 1 })
 
     return res.status(200).json({
