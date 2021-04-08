@@ -60,7 +60,7 @@ exports.auth = async (req: Request, res: Response, next: NextFunction) => {
       })
     }
     // General error handling
-    res.status(500).json({
+    return res.status(500).json({
       status: 500,
       message: error.message
     })
