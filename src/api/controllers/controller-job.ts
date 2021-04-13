@@ -148,105 +148,105 @@ exports.getPositionsByProject = async (req: Request, res: Response) => {
 }
 
 /**
- * Controller to get job with sorting and pagination,
+ * Controller to get position with sorting and pagination,
  * it receives the page number, items per page and sort type
- * and will return the jobs corresponding to the query and a 200 success message.
+ * and will return the positions corresponding to the query and a 200 success message.
  * @param {Request} req - Request object from express router
  * @param {string} req.query.page - page number
  * @param {string} req.query.itemsPerPage - items to show per page
  * @param {string} req.query.sort - way to sort items
  * @param {object} res - Response object from express router
  * @method GET
- * @route /job
+ * @route /position
  * @access Private
  * @author Gabor
  */
-// exports.getAllJobs = async (req: Request, res: Response) => {
-//   try {
-//     // Page number
-//     const page = req.query.page || '1'
-//     // How many items should be per page
-//     const itemsPerPage = req.query.itemsPerPage || '10000'
-//     // Type of sorting
-//     const sort = req.query.sort || '+name'
-//     // Object to be sent to sort
-//     let sortObj
-//     // necessary for mongo skip method
-//     let itemsToSkip
-//
-//     // Depending of the sort variable value, saves the sort object
-//     switch (sort) {
-//       case '+name':
-//         sortObj = { sortTitle: 1 }
-//         break
-//       case '-name':
-//         sortObj = { sortTitle: -1 }
-//         break
-//       case '+date':
-//         sortObj = { createdAt: 1 }
-//         break
-//       case '-date':
-//         sortObj = { createdAt: -1 }
-//         break
-//       default:
-//         sortObj = { sortName: 1 }
-//     }
-//
-//     // Req variables have to be strings
-//     if (typeof page === 'string' && typeof itemsPerPage === 'string') {
-//       // Logic for number of documents to be skipped
-//       itemsToSkip = (parseInt(page, 10) - 1) * parseInt(itemsPerPage, 10)
-//       // Get the total count of the documents for setting up pages
-//       const count = await model_job.find({}).count()
-//
-//       if (count === 0) {
-//         return res.status(200).json({
-//           status: 200,
-//           message: 'No documents found'
-//         })
-//       }
-//
-//       const maxPages = Math.ceil(count / parseInt(itemsPerPage, 10))
-//
-//       if (maxPages < parseInt(page, 10)) {
-//         return res.status(400).json({
-//           status: 400,
-//           message: 'Page number is out of range'
-//         })
-//       }
-//       // The filter function itself
-//       const filteredJobs = await model_job
-//         .find({})
-//         .skip(itemsToSkip)
-//         .limit(parseInt(itemsPerPage, 10))
-//         .sort(sortObj)
-//       // If there are jobs matching the filter
-//       if (filteredJobs.length > 0) {
-//         return res.status(200).json({
-//           status: 200,
-//           message: `Serving page: ${page}, itemsPerPage: ${itemsPerPage}, sorting: ${
-//             sort || '+name'
-//           }.`,
-//           totalJobs: count,
-//           maxPages: Math.ceil(count / parseInt(itemsPerPage, 10)),
-//           jobs: filteredJobs
-//         })
-//       }
-//     } else {
-//       // If no results
-//       return res.status(400).json({
-//         status: 400,
-//         message: 'Invalid type of input'
-//       })
-//     }
-//   } catch (error) {
-//     console.log(error)
-//     return res.status(500).json({
-//       status: 500,
-//       message: error.message
-//     })
-//   }
-// }
+exports.getAllPositions = async (req: Request, res: Response) => {
+  try {
+    // Page number
+    const page = req.query.page || '1'
+    // How many items should be per page
+    const itemsPerPage = req.query.itemsPerPage || '10000'
+    // Type of sorting
+    const sort = req.query.sort || '+name'
+    // Object to be sent to sort
+    let sortObj
+    // necessary for mongo skip method
+    let itemsToSkip
+
+    // Depending of the sort variable value, saves the sort object
+    switch (sort) {
+      case '+name':
+        sortObj = { sortTitle: 1 }
+        break
+      case '-name':
+        sortObj = { sortTitle: -1 }
+        break
+      case '+date':
+        sortObj = { createdAt: 1 }
+        break
+      case '-date':
+        sortObj = { createdAt: -1 }
+        break
+      default:
+        sortObj = { sortName: 1 }
+    }
+
+    // Req variables have to be strings
+    if (typeof page === 'string' && typeof itemsPerPage === 'string') {
+      // Logic for number of documents to be skipped
+      itemsToSkip = (parseInt(page, 10) - 1) * parseInt(itemsPerPage, 10)
+      // Get the total count of the documents for setting up pages
+      const count = await model_position.find({}).count()
+
+      if (count === 0) {
+        return res.status(200).json({
+          status: 200,
+          message: 'No documents found'
+        })
+      }
+
+      const maxPages = Math.ceil(count / parseInt(itemsPerPage, 10))
+
+      if (maxPages < parseInt(page, 10)) {
+        return res.status(400).json({
+          status: 400,
+          message: 'Page number is out of range'
+        })
+      }
+      // The filter function itself
+      const filteredPositions = await model_position
+        .find({})
+        .skip(itemsToSkip)
+        .limit(parseInt(itemsPerPage, 10))
+        .sort(sortObj)
+      // If there are positions matching the filter
+      if (filteredPositions.length > 0) {
+        return res.status(200).json({
+          status: 200,
+          message: `Serving page: ${page}, itemsPerPage: ${itemsPerPage}, sorting: ${
+            sort || '+name'
+          }.`,
+          totalPositions: count,
+          maxPages: Math.ceil(count / parseInt(itemsPerPage, 10)),
+          positions: filteredPositions
+        })
+      }
+    } else {
+      // If no results
+      return res.status(400).json({
+        status: 400,
+        message: 'Invalid type of input'
+      })
+    }
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
 
 /**
  * Controller to update a job corresponding to the ID,
