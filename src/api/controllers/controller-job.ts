@@ -125,27 +125,27 @@ exports.getPositionById = async (req: Request, res: Response) => {
   }
 }
 
-// exports.getJobsByProject = async (req: Request, res: Response) => {
-//   try {
-//     const projectId = req.params.id
-//     const jobsByProject = await model_job
-//       .find({ project: projectId })
-//       .select(['-__v', '-sortName'])
-//       .sort({ sortName: 1 })
-//
-//     return res.status(200).json({
-//       status: 200,
-//       message: 'Get jobs by project ID were successful',
-//       jobs: jobsByProject
-//     })
-//   } catch (error) {
-//     console.log(error)
-//     return res.status(500).json({
-//       status: 500,
-//       message: error.message
-//     })
-//   }
-// }
+exports.getPositionsByProject = async (req: Request, res: Response) => {
+  try {
+    const projectId = req.params.id
+    const positionsByProject = await model_position
+      .find({ project: projectId })
+      .select(['-__v', '-sortName'])
+      .sort({ sortName: 1 })
+
+    return res.status(200).json({
+      status: 200,
+      message: 'Get positions by project ID were successful',
+      positions: positionsByProject
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
 
 /**
  * Controller to get job with sorting and pagination,

@@ -3,7 +3,7 @@ import express from 'express'
 const {
   createPosition,
   getPositionById,
-  getJobsByProject,
+  getPositionsByProject,
   getAllJobs,
   updateJobById,
   deleteJobById
@@ -15,7 +15,7 @@ const router = express.Router()
 
 router.post('/', auth, createPosition)
 // router.get('/', auth, getAllJobs)
-// router.get('/project/:id', auth, getJobsByProject)
+router.get('/project/:id', auth, getPositionsByProject)
 router.get('/:id', auth, getPositionById)
 // router.patch('/:id', auth, updateJobById)
 // router.delete('/:id', auth, deleteJobById)
