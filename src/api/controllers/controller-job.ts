@@ -249,106 +249,106 @@ exports.getAllPositions = async (req: Request, res: Response) => {
 }
 
 /**
- * Controller to update a job corresponding to the ID,
+ * Controller to update a position corresponding to the ID,
  * it also takes the user ID decoded from the token,
  * and check if the user is the owner of the project
- * updates the job and technologies array with new values
- * and will return the job and a 200 success message.
+ * updates the position and technologies array with new values
+ * and will return the position and a 200 success message.
  * @param {Request} req - Request object from express router
- * @param {string} req.params.id - job ID
+ * @param {string} req.params.id - position ID
  * @param {string} req.body.decoded._id - user ID
- * @param {object} req.body.job - job details to be updated
- * @param {string} req.body.job.title - job title
- * @param {string} req.body.job.description - job description
- * @param {array} req.body.job.technologies - technologies array
+ * @param {object} req.body.position - position details to be updated
+ * @param {string} req.body.position.title - position title
+ * @param {string} req.body.position.description - position description
+ * @param {array} req.body.position.technologies - technologies array
  * @param {object} res - Response object from express router
  * @method PATCH
- * @route /job/:id
+ * @route /position/:id
  * @access Private
  * @author Gabor
  */
-// exports.updateJobById = async (req: Request, res: Response) => {
-//   try {
-//     // Get job ID
-//     const jobId = req.params.id
-//     // Get user ID from token
-//     const userId = req.body.decoded._id
-//     // Prepare job for update
-//     const job = {
-//       title: req.body.job.title,
-//       sortTitle: req.body.job.title.toLowerCase(),
-//       description: req.body.job.description,
-//       technologies: req.body.job.technologies,
-//       project: req.body.job.projectId,
-//       positions: req.body.job.positions,
-//     }
-//
-//     if(job.positions > 0) {
-//
-//       const foundProject = await model_projects.findOne({
-//         _id: job.project,
-//         owner: userId
-//       })
-//
-//       if (foundProject) {
-//         // Get job by ID with project populated
-//         const foundJob = await model_job
-//             .findOne({_id: jobId})
-//             .populate('project')
-//
-//         // If job found
-//         if (foundJob) {
-//           // If the user is the owner who is making the request
-//           if (foundJob.project.owner == userId) {
-//             // Update job
-//             const updatedJob = await model_job.findByIdAndUpdate(
-//                 jobId,
-//                 {
-//                   title: job.title,
-//                   sortTitle: job.sortTitle,
-//                   description: job.description,
-//                   technologies: job.technologies,
-//                   project: job.project,
-//                   positions: job.positions
-//                 },
-//                 {new: true}
-//             )
-//             // Delete technologies
-//             await model_technology.updateMany(
-//                 {jobs: jobId},
-//                 {$pull: {jobs: jobId}}
-//             )
-//             // Reassign the new technologies to the DB
-//             await model_technology.updateMany(
-//                 {name: job.technologies},
-//                 {$push: {jobs: jobId}}
-//             )
-//             // If update was successful
-//             if (updatedJob) {
-//               return res.status(200).json({
-//                 status: 200,
-//                 message: 'Successfully updated job',
-//                 job: updatedJob
-//               })
-//             }
-//           }
-//         }
-//       }
-//     }
-//
-//     // If something went wrong
-//     return res.status(400).json({
-//       status: 400,
-//       message: 'Something went wrong'
-//     })
-//   } catch (error) {
-//     console.log(error)
-//     return res.status(500).json({
-//       status: 500,
-//       message: error.message
-//     })
-//   }
-// }
+exports.updatePositionById = async (req: Request, res: Response) => {
+  try {
+    // Get position ID
+    const positionId = req.params.id
+    // Get user ID from token
+    const userId = req.body.decoded._id
+    // Prepare position for update
+    const position = {
+      title: req.body.position.title,
+      sortTitle: req.body.position.title.toLowerCase(),
+      description: req.body.position.description,
+      technologies: req.body.position.technologies,
+      project: req.body.position.projectId,
+      positions: req.body.position.positions,
+    }
+
+    if(position.positions > 0) {
+
+      const foundProject = await model_projects.findOne({
+        _id: position.project,
+        owner: userId
+      })
+
+      if (foundProject) {
+        // Get position by ID with project populated
+        const foundPosition = await model_position
+            .findOne({_id: positionId})
+            .populate('project')
+
+        // If position found
+        if (foundPosition) {
+          // If the user is the owner who is making the request
+          if (foundPosition.project.owner == userId) {
+            // Update position
+            const updatedPosition = await model_position.findByIdAndUpdate(
+                positionId,
+                {
+                  title: position.title,
+                  sortTitle: position.sortTitle,
+                  description: position.description,
+                  technologies: position.technologies,
+                  project: position.project,
+                  positions: position.positions
+                },
+                {new: true}
+            )
+            // Delete technologies
+            await model_technology.updateMany(
+                {positions: positionId},
+                {$pull: {positions: positionId}}
+            )
+            // Reassign the new technologies to the DB
+            await model_technology.updateMany(
+                {name: position.technologies},
+                {$push: {positions: positionId}}
+            )
+            // If update was successful
+            if (updatedPosition) {
+              return res.status(200).json({
+                status: 200,
+                message: 'Successfully updated position',
+                position: updatedPosition
+              })
+            }
+          }
+        }
+      }
+    }
+
+    // If something went wrong
+    return res.status(400).json({
+      status: 400,
+      message: 'Something went wrong'
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
 
 /**
  * Controller to delete a job by ID,

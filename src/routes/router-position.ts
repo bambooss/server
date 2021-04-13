@@ -5,7 +5,7 @@ const {
   getPositionById,
   getPositionsByProject,
   getAllPositions,
-  updateJobById,
+  updatePositionById,
   deleteJobById
 } = require('../api/controllers/controller-job')
 
@@ -17,7 +17,7 @@ router.post('/', auth, createPosition)
 router.get('/', auth, getAllPositions)
 router.get('/project/:id', auth, getPositionsByProject)
 router.get('/:id', auth, getPositionById)
-// router.patch('/:id', auth, updateJobById)
+router.patch('/:id', auth, updatePositionById)
 // router.delete('/:id', auth, deleteJobById)
 
 module.exports = router
