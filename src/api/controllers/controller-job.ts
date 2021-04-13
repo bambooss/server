@@ -351,61 +351,61 @@ exports.updatePositionById = async (req: Request, res: Response) => {
 }
 
 /**
- * Controller to delete a job by ID,
- * it needs the job ID to look for the corresponding job,
+ * Controller to delete a position by ID,
+ * it needs the position ID to look for the corresponding position,
  * the ID decoded from the token to cross check it with the project owner
  * and will return  a 200 deleted message.
  * @param {Request} req - Request object from express router
- * @param {string} req.params.id - job ID
+ * @param {string} req.params.id - position ID
  * @param {string} req.body.decoded._id - user ID from the token
  * @param {object} res - Response object from express router
  * @method DELETE
- * @route /job/:id
+ * @route /position/:id
  * @access Private
  * @author Gabor
  */
-// exports.deleteJobById = async (req: Request, res: Response) => {
-//   try {
-//     // Get job ID from the query string
-//     const jobId = req.params.id
-//     // Get the user ID from the token
-//     const userId = req.body.decoded._id
-//
-//     // Find job by id and populate project
-//     const job = await model_job.findOne({ _id: jobId }).populate('project')
-//
-//     // If a job found
-//     if (job) {
-//       // Verify if the user is the project owner
-//       if (job.project.owner == userId) {
-//         // Delete job from DB
-//         const deletedJob = await model_job.findOneAndRemove({ _id: jobId })
-//         // If job deleted
-//         if (deletedJob) {
-//           // Remove job ID from technologies
-//           await model_technology.updateMany(
-//             { jobs: jobId },
-//             { $pull: { jobs: jobId } }
-//           )
-//
-//           return res.status(200).json({
-//             status: 200,
-//             message: 'Job successfully deleted'
-//           })
-//         }
-//       }
-//     }
-//
-//     // If no job found
-//     return res.status(400).json({
-//       status: 400,
-//       message: 'Job not found'
-//     })
-//   } catch (error) {
-//     console.log(error)
-//     return res.status(500).json({
-//       status: 500,
-//       message: error.message
-//     })
-//   }
-// }
+exports.deletePositionById = async (req: Request, res: Response) => {
+  try {
+    // Get position ID from the query string
+    const positionId = req.params.id
+    // Get the user ID from the token
+    const userId = req.body.decoded._id
+
+    // Find position by id and populate project
+    const position = await model_position.findOne({ _id: positionId }).populate('project')
+
+    // If a position found
+    if (position) {
+      // Verify if the user is the project owner
+      if (position.project.owner == userId) {
+        // Delete position from DB
+        const deletedPosition = await model_position.findOneAndRemove({ _id: positionId })
+        // If position deleted
+        if (deletedPosition) {
+          // Remove position ID from technologies
+          await model_technology.updateMany(
+            { positions: positionId },
+            { $pull: { positions: positionId } }
+          )
+
+          return res.status(200).json({
+            status: 200,
+            message: 'position successfully deleted'
+          })
+        }
+      }
+    }
+
+    // If no position found
+    return res.status(400).json({
+      status: 400,
+      message: 'Position not found'
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}

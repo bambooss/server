@@ -6,7 +6,7 @@ const {
   getPositionsByProject,
   getAllPositions,
   updatePositionById,
-  deleteJobById
+  deletePositionById
 } = require('../api/controllers/controller-job')
 
 const { auth } = require('../middlewares/middleware-auth')
@@ -18,6 +18,6 @@ router.get('/', auth, getAllPositions)
 router.get('/project/:id', auth, getPositionsByProject)
 router.get('/:id', auth, getPositionById)
 router.patch('/:id', auth, updatePositionById)
-// router.delete('/:id', auth, deleteJobById)
+router.delete('/:id', auth, deletePositionById)
 
 module.exports = router
