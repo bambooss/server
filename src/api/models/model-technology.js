@@ -18,10 +18,10 @@ const technologiesSchema = new mongoose.Schema({
       ref: 'projects',
     }
   ],
-  jobs: [
+  positions: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'jobs',
+      ref: 'positions',
     }
   ],
   status: {

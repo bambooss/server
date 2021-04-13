@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const jobsSchema = new mongoose.Schema(
+const positionSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -14,7 +14,7 @@ const jobsSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    positions: {
+    numberOfPositions: {
       type: Number,
       default: 1,
     },
@@ -30,6 +30,6 @@ const jobsSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-const jobs = mongoose.model('jobs', jobsSchema)
+const positions = mongoose.model('positions', positionSchema)
 
-module.exports = jobs
+module.exports = positions

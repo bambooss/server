@@ -4,7 +4,7 @@ import { Request, Response } from 'express'
 // const model_users = require('../models/model-user')
 const model_projects = require('../models/model-project')
 const model_technology = require('../models/model-technology')
-const model_job = require('../models/model-job')
+const model_job = require('../models/model-position')
 
 /**
  * Controller to create a new job,

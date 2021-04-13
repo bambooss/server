@@ -33,7 +33,7 @@ const projectSchema = new mongoose.Schema(
       type: String,
       default: ''
     },
-    jobsAvailable: {
+    positionsAvailable: {
       type: Boolean,
       default: false
     }
