@@ -86,45 +86,45 @@ exports.createPosition = async (req: Request, res: Response) => {
 }
 
 /**
- * Controller to get a job by ID,
- * it needs the job ID to look for the corresponding job
+ * Controller to get a position by ID,
+ * it needs the position ID to look for the corresponding position
  * and will return the project and a 200 success message.
  * @param {Request} req - Request object from express router
- * @param {string} req.params.id - job ID
+ * @param {string} req.params.id - position ID
  * @param {object} res - Response object from express router
  * @method GET
- * @route /job/:id
+ * @route /position/:id
  * @access Private
  * @author Gabor
  */
-// exports.getJobById = async (req: Request, res: Response) => {
-//   try {
-//     // Get job Id
-//     const jobId = req.params.id
-//     // Find job by ID and populate the project
-//     const job = await model_job.findById(jobId).populate('project')
-//     // If there was no project was found with this ID
-//     if (!job) {
-//       return res.status(404).json({
-//         status: 404,
-//         message: 'Job not found'
-//       })
-//     }
-//
-//     return res.status(200).json({
-//       status: 200,
-//       message: 'Job found',
-//       job
-//     })
-//   } catch (error) {
-//     console.log(error)
-//     return res.status(500).json({
-//       status: 500,
-//       message: error.message
-//     })
-//   }
-// }
-//
+exports.getPositionById = async (req: Request, res: Response) => {
+  try {
+    // Get position Id
+    const positionId = req.params.id
+    // Find position by ID and populate the project
+    const position = await model_position.findById(positionId).populate('project')
+    // If there was no project was found with this ID
+    if (!position) {
+      return res.status(404).json({
+        status: 404,
+        message: 'Position not found'
+      })
+    }
+
+    return res.status(200).json({
+      status: 200,
+      message: 'Position found',
+      position
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      status: 500,
+      message: error.message
+    })
+  }
+}
+
 // exports.getJobsByProject = async (req: Request, res: Response) => {
 //   try {
 //     const projectId = req.params.id

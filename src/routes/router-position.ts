@@ -2,7 +2,7 @@ import express from 'express'
 
 const {
   createPosition,
-  getJobById,
+  getPositionById,
   getJobsByProject,
   getAllJobs,
   updateJobById,
@@ -16,7 +16,7 @@ const router = express.Router()
 router.post('/', auth, createPosition)
 // router.get('/', auth, getAllJobs)
 // router.get('/project/:id', auth, getJobsByProject)
-// router.get('/:id', auth, getJobById)
+router.get('/:id', auth, getPositionById)
 // router.patch('/:id', auth, updateJobById)
 // router.delete('/:id', auth, deleteJobById)
 
