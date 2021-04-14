@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express'
 const user = require('./router-user')
 const project = require('./router-project')
 const technology = require('./router-technology')
-const job = require('./router-job')
+const position = require('./router-position')
 const language = require('./router-language')
 const router = express.Router()
 
@@ -12,7 +12,7 @@ router.use('/project', project)
 
 router.use('/technology', technology)
 
-router.use('/job', job)
+router.use('/position', position)
 
 router.use('/language', language)
 

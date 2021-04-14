@@ -142,7 +142,7 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
       const technologies = await model_technology
         .find({})
         .select(['name', '-_id'])
-      tech = await technologies.map((technology: { name: String }) => {
+      tech = await technologies.map((technology: { name: string }) => {
         return technology.name
       })
     }
@@ -166,7 +166,7 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
 
     let maxPages
 
-    let jobsAvailable = req.query.job ? { jobsAvailable: req.query.job } : {}
+    const positionsAvailable = req.query.position ? { positionsAvailable: req.query.position } : {}
 
     // Depending of the sort variable value, saves the sort object
     switch (sort) {
@@ -205,7 +205,7 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
       tech.pop()
       count = await model_projects.countDocuments({
         technologies: matchObj,
-        ...jobsAvailable
+        ...positionsAvailable
       })
       console.log('count: ', count)
       if (count === 0) {
@@ -227,7 +227,7 @@ exports.getAllProjects = async (req: Request<paginationReq>, res: Response) => {
       filteredProjects = await model_projects
         .find({
           technologies: matchObj,
-          ...jobsAvailable
+          ...positionsAvailable
         })
         .skip(itemsToSkip)
         .limit(parseInt(itemsPerPage, 10))
